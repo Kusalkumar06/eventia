@@ -1,32 +1,64 @@
-'use client'
-import React from 'react'
-import Link from 'next/link'
-import { lobster } from '@/app/utilities/fonts'
-import { usePathname } from 'next/navigation'
+"use client";
+import { motion } from "framer-motion";
+import { signOut } from "next-auth/react";
+import React from "react";
+import Link from "next/link";
+import { lobster } from "@/app/lib/fonts";
+import { usePathname } from "next/navigation";
+import ThemeToggle from "./ThemeToggle";
 
 const Navbar = () => {
-  const pathname = usePathname()
+  interface NavLink {
+    label: string;
+    value: string;
+  }
+
+  const links: NavLink[] = [
+    { label: "Home", value: "/" },
+    { label: "Events", value: "/events" },
+    { label: "My Events", value: "/my-events" },
+    { label: "Profile", value: "/profile" },
+  ];
+  const pathname = usePathname();
   return (
-    <div>
-      <nav className='px-20 py-3 flex justify-between'>
+    <div className="">
+      <nav className="px-20 py-3 flex justify-between top-0 z-50">
         <div>
-          <Link href='/' className={`${lobster.className} text-[#DB2525] text-[30px] text`}>Eventia</Link>
+          <Link
+            href="/"
+            className={`${lobster.className} text-[#DB2525] text-[30px] text`}
+          >
+            Eventia
+          </Link>
         </div>
-        <div className='flex space-x-9 items-center justify-center font'>
-          <Link href='/' className={`transition text-[18px] flex items-center  gap-3  ${pathname === '/' && 'bg-[#f9c3c3ff] rounded px-4 py-px'}`}>{pathname === '/' && <span className="w-2 h-2 rounded-full bg-[#DB2525]"></span>} Home</Link>
-          <Link href='/events' className={`transition text-[18px] flex items-center  gap-3  ${pathname === '/events' && 'bg-[#f9c3c3ff] rounded px-4 py-px'}`}>{pathname === '/events' && <span className="w-2 h-2 rounded-full bg-[#DB2525]"></span>} Events</Link>
-          <Link href='/my-events' className={`transition text-[18px] flex items-center  gap-3  ${pathname === '/my-events' && 'bg-[#f9c3c3ff] rounded px-4 py-px'}`}>{pathname === '/my-events' && <span className="w-2 h-2 rounded-full bg-[#DB2525]"></span>} My Events</Link>
-          <Link href='/profile' className={`transition text-[18px] flex items-center  gap-3  ${pathname === '/profile' && 'bg-[#f9c3c3ff] rounded px-4 py-px'}`}>{pathname === '/profile' && <span className="w-2 h-2 rounded-full bg-[#DB2525]"></span>} profile</Link>
-          <button className='bg-[#DB2525] rounded-[5px] text-center px-5 py-1 text-white'>
-            <Link href='/create-event'>+ Create Event</Link>
+        <div className="flex space-x-9 items-center justify-center font">
+          {links.map((link: NavLink) => (
+            <Link
+              key={link.label}
+              href={link.value}
+              className={`relative transition text-[18px] flex items-center gap-3 ${pathname === link.value && "text-[#DB2525]"}`}
+            >
+              {link.label}
+              {pathname === link.value && (
+                <motion.span
+                  layoutId="nav-tab-underline"
+                  className="absolute left-0 right-0 bottom-0 h-[3px] bg-red-600"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+            </Link>
+          ))}
+          <button className="bg-[#DB2525] rounded-[5px] text-center px-5 py-1 text-white">
+            <Link href="/create-event">+ Create Event</Link>
           </button>
-          <button className='border border-[#DB2525] rounded-[5px] text-center px-5 py-1 text-[#DB2525] hover:bg-[#DB2525] hover:text-white'>
-            <Link href='/create-event'>Sign out</Link>
+          <button onClick={() => signOut({ callbackUrl: "/signin" })} className="border border-[#DB2525] rounded-[5px] text-center px-5 py-1 text-[#DB2525] hover:bg-[#DB2525] hover:text-white">
+            Sign out
           </button>
+          <ThemeToggle />
         </div>
       </nav>
     </div>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

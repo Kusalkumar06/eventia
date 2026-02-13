@@ -1,5 +1,13 @@
 import Link from "next/link";
-
+import {
+  Calendar,
+  MapPin,
+  Landmark,
+  Users,
+  Clock,
+  SquareArrowOutUpRight,
+  CircleDot,
+} from "lucide-react";
 // format helper for dates
 const formatEventDate = (start: string | Date, end: string | Date): string => {
   const startDate = new Date(start);
@@ -15,8 +23,6 @@ const formatEventDate = (start: string | Date, end: string | Date): string => {
   if (startDate.toDateString() === endDate.toDateString()) {
     return startDate.toLocaleDateString("en-GB", options);
   } else {
-    // 12-14 March 2026
-    // check if same month and year
     if (
       startDate.getMonth() === endDate.getMonth() &&
       startDate.getFullYear() === endDate.getFullYear()
@@ -28,25 +34,9 @@ const formatEventDate = (start: string | Date, end: string | Date): string => {
   }
 };
 
-interface Event {
-  title: string;
-  slug: string;
-  shortDescription?: string;
-  category: {
-    name: string;
-    slug: string;
-  };
-  otherCategoryLabel?: string;
-  mode: "online" | "offline";
-  startDate: string | Date;
-  endDate: string | Date;
-  location?: {
-    city?: string;
-    venue?: string;
-  };
-}
+import { EventDTO } from "@/app/lib/types";
 
-const EventCard = ({ event }: { event: Event }) => {
+const EventCard = ({ event }: { event: EventDTO }) => {
   const {
     title,
     slug,
@@ -57,72 +47,155 @@ const EventCard = ({ event }: { event: Event }) => {
     startDate,
     endDate,
     location,
+    maxRegistrations,
+    registrationsCount,
+    isRegistrationRequired,
   } = event;
 
-  const categoryDisplay =
-    category.slug === "others" && otherCategoryLabel
-      ? otherCategoryLabel
-      : category.name;
+  const remainingSlots = isRegistrationRequired
+    ? Math.max(0, (maxRegistrations ?? 0) - registrationsCount)
+    : null;
+
+  const stripTime = (date: Date) =>
+    new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+
+  const today = stripTime(new Date());
+  const start = stripTime(new Date(startDate));
+  const end = stripTime(new Date(endDate));
+
+  let eventLabel: string;
+
+  if (today < start) {
+    const daysLeft = Math.ceil((start - today) / (1000 * 60 * 60 * 24));
+    eventLabel = daysLeft === 1 ? "1 day left" : `${daysLeft} days left`;
+  } else if (today > end) {
+    eventLabel = "Completed";
+  } else {
+    eventLabel = "Happening Today";
+  }
+
+  const categoryDisplay = category.name;
+  const isCompleted = eventLabel === "Completed";
 
   return (
-    <article className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-100 flex flex-col h-full">
-      <div className="p-5 flex flex-col flex-grow">
-        <div className="flex justify-between items-start mb-3">
-          <span className="inline-block px-3 py-1 text-xs font-semibold tracking-wide text-blue-600 bg-blue-50 rounded-full">
-            {categoryDisplay}
-          </span>
-          <span
-            className={`inline-block px-2 py-1 text-xs font-medium rounded ${mode === "online" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}
-          >
-            {mode === "online" ? "Online" : "Offline"}
-          </span>
+    <article className="event-card bg-card text-foreground border border-border rounded-xl p-5 flex flex-col h-full shadow-lg hover:shadow-2xl transition-all duration-300">
+      {/* HEADER */}
+      <div className="flex items-center justify-between gap-5">
+        <h3 className="text-lg font-semibold">{title}</h3>
+
+        <span className="text-sm bg-primary text-primary-foreground px-4 py-1 rounded-lg">
+          {categoryDisplay}
+        </span>
+      </div>
+
+      {/* MODE */}
+      <div className="flex items-center gap-5 mt-3">
+        <div className="flex items-center gap-1 text-muted-foreground">
+          <CircleDot className="w-3 h-3" />
+          <p className="capitalize text-sm">{mode}</p>
         </div>
 
-        <Link href={`/events/${slug}`} className="block group mb-2">
-          <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
-            {title}
-          </h3>
-        </Link>
+        <button
+          className="
+        bg-primary
+        text-primary-foreground
+        px-4 py-1
+        text-xs
+        rounded-lg
+        hover:bg-primary/90
+        transition
+      "
+        >
+          Verified
+        </button>
+      </div>
 
-        <div className="text-sm text-gray-500 mb-4 flex items-center gap-2">
-          <span>📅 {formatEventDate(startDate, endDate)}</span>
+      {/* DESCRIPTION */}
+      <div className="my-5">
+        <p className="text-sm text-muted-foreground">{shortDescription}</p>
+      </div>
+
+      {/* DETAILS */}
+      <div className="space-y-3 my-2 text-muted-foreground">
+        <div className="flex items-center gap-2">
+          <Calendar className="w-4 h-4" />
+          <p>{formatEventDate(startDate, endDate)}</p>
         </div>
 
-        <div className="text-sm text-gray-500 mb-3 flex items-center gap-1">
-          {mode === "online" ? (
-            <>
-              <span>🌐</span>
-              <span>Online Event</span>
-            </>
-          ) : (
-            location?.city && (
-              <>
-                <span>📍</span>
-                <span>
-                  {location.city}
-                  {location.venue ? `, ${location.venue}` : ""}
-                </span>
-              </>
-            )
-          )}
-        </div>
+        {mode === "offline" ? (
+          <>
+            <div className="flex items-center gap-2">
+              <Landmark className="w-4 h-4" />
+              <p>{location?.venue}</p>
+            </div>
 
-        {shortDescription && (
-          <p className="text-gray-600 text-sm line-clamp-2 mb-4 flex-grow">
-            {shortDescription}
-          </p>
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              <p>
+                {location?.city}, {location?.state}
+              </p>
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center gap-2">
+            <CircleDot className="w-4 h-4" />
+            <p>Online Event</p>
+          </div>
         )}
 
-        <div className="mt-auto pt-4 border-t border-gray-100">
+        {!isCompleted && (
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4" />
+            <p>
+              Slots:{" "}
+              <span
+                className={`font-semibold ${
+                  remainingSlots === 0 ? "text-primary" : "text-foreground"
+                }`}
+              >
+                {!isRegistrationRequired
+                  ? "Unlimited"
+                  : remainingSlots === 0
+                    ? "Sold Out"
+                    : `${remainingSlots} Available / ${maxRegistrations}`}
+              </span>
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* FOOTER */}
+      <footer className="mt-auto">
+        {/* you don't have border-border/30, so do it correctly */}
+        <hr className="border-border opacity-30 mb-2" />
+
+        <div className="text-muted-foreground mb-2">
+          <p className="text-sm text-right">Organized by KusalKumar</p>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Clock className="w-4 h-4" />
+            <p>{eventLabel}</p>
+          </div>
+
           <Link
             href={`/events/${slug}`}
-            className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-blue-600 bg-transparent border border-blue-600 rounded-md hover:bg-blue-50 transition-colors"
-            aria-label={`View details for ${title}`}
+            className="
+          bg-primary
+          text-primary-foreground
+          px-5 py-1
+          rounded-lg
+          flex items-center gap-2
+          hover:bg-primary/90
+          transition
+        "
           >
-            View Details
+            <SquareArrowOutUpRight className="w-4 h-4" />
+            <p>View Details</p>
           </Link>
         </div>
-      </div>
+      </footer>
     </article>
   );
 };

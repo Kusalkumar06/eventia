@@ -1,12 +1,20 @@
 import { NextResponse,NextRequest } from "next/server";
 import slugify from "slugify";
 import mongoose from "mongoose";
-import type { FilterQuery } from "mongoose";
 import { connectDb } from "@/app/utilities/db";
 import { EventModel } from "@/app/api/models/event.model";
 import { CategoryModel } from "@/app/api/models/category.model";
 
-// CREATE EVENT
+type EventFilter = {
+  status: "published";
+  $or?: Array<
+    | { title: { $regex: string; $options: string } }
+    | { description: { $regex: string; $options: string } }
+  >;
+  category?: mongoose.Types.ObjectId;
+};
+
+
 
 export async function POST(req: Request) {
   try {
@@ -157,35 +165,26 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get("search");
     const categorySlug = searchParams.get("category");
 
-    const query: FilterQuery<IEvent> = {
-      status: "published",
-    };
+    const filter: EventFilter = {status: "published",};
 
-    // 🔎 Search
     if (search) {
-      query.$or = [
+      filter.$or = [
         { title: { $regex: search, $options: "i" } },
         { description: { $regex: search, $options: "i" } },
       ];
     }
 
-    // 🏷️ Category (slug → ObjectId)
     if (categorySlug) {
-      const category = await CategoryModel.findOne({
-        slug: categorySlug,
-        isActive: true,
-      });
+      const category = await CategoryModel.findOne({slug: categorySlug,isActive: true,});
 
       if (!category) {
         return NextResponse.json([]);
       }
 
-      query.category = category._id;
+      filter.category = category._id;
     }
 
-    const events = await EventModel.find(query)
-      .populate("category", "name slug")
-      .sort({ startDate: 1 });
+    const events = await EventModel.find(filter).populate("category", "name slug").sort({ startDate: 1 });
 
     return NextResponse.json(events);
   } catch (error: unknown) {
@@ -195,4 +194,5 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ message }, { status: 500 });
   }
 }
+
 

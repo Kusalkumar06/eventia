@@ -1,5 +1,6 @@
 import FilterComponent from "@/components/FilterComponent";
-import EventCard from "@/components/EventCard";
+import EventTab from "@/components/EventTab";
+import { EventDTO } from "@/app/lib/types";
 
 type HomeProps = {
   searchParams: Promise<{
@@ -8,19 +9,20 @@ type HomeProps = {
   }>;
 };
 
-async function getEvents(search?: string, category?: string) {
+async function getEvents(
+  search?: string,
+  category?: string,
+): Promise<EventDTO[]> {
   const params = new URLSearchParams();
 
   if (search) params.set("search", search);
   if (category && category !== "all") params.set("category", category);
 
-  const baseUrl =
-    process.env.SITE_URL ?? "http://localhost:3000";
+  const baseUrl = process.env.SITE_URL ?? "http://localhost:3000";
 
-  const res = await fetch(
-    `${baseUrl}/api/events?${params.toString()}`,
-    { cache: "no-store" }
-  );
+  const res = await fetch(`${baseUrl}/api/events?${params.toString()}`, {
+    cache: "no-store",
+  });
 
   if (!res.ok) {
     throw new Error("Failed to fetch events");
@@ -39,23 +41,18 @@ const Events = async ({ searchParams }: HomeProps) => {
 
   return (
     <div>
+      <div className="text-center py-15">
+        <h1 className="text-4xl font-bold">Explore Events</h1>
+        <p className="text-lg text-gray-500">
+          Find events that match your interests and availability
+        </p>
+      </div>
       <div className="px-18 rounded-md">
-        <FilterComponent
-          search={search}
-          selectedCategory={selectedCategory}
-        />
+        <FilterComponent search={search} selectedCategory={selectedCategory} />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-        {events.length > 0 ? (
-          events.map((event) => (
-            <EventCard key={event._id} event={event} />
-          ))
-        ) : (
-          <p className="text-center text-gray-500">
-            No events found
-          </p>
-        )}
+      <div>
+        <EventTab events={events} />
       </div>
     </div>
   );
