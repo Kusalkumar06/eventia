@@ -10,16 +10,12 @@ type Category = {
 };
 
 const FilterComponent = ({
-  search,
   selectedCategory,
-} : {
-  search: string;
+}: {
   selectedCategory: string;
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  const [searchInput, setSearchInput] = useState(search);
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
@@ -42,27 +38,16 @@ const FilterComponent = ({
   };
 
   return (
-    <div className="my-5 bg-card py-5 px-7 shadow-lg">
-      <div className="flex items-center gap-2 mb-5">
-        <input
-          type="search"
-          className="border border-border px-5 py-2 w-full rounded-md outline-none bg-background text-foreground"
-          placeholder="search events..."
-          value={searchInput}
-          onChange={(e) => {
-            setSearchInput(e.target.value);
-            updateUrl("search", e.target.value);
-          }}
-        />
-      </div>
-
+    <div className="my-5 bg-card py-5 px-7 shadow-lg rounded-xl border border-zinc-200 dark:border-zinc-800">
       <div className="space-y-4">
-        <h2 className="text-foreground">Filter by Category</h2>
+        <h2 className="text-xl font-semibold text-foreground">
+          Filter by Category
+        </h2>
 
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => updateUrl("category", "all")}
-            className={`px-4 py-1 rounded-lg ${selectedCategory === "all" ? "bg-primary text-primary-foreground" : "border border-border text-foreground"}`}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === "all" ? "bg-primary text-white" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"}`}
           >
             All Categories
           </button>
@@ -71,7 +56,8 @@ const FilterComponent = ({
             <button
               key={cat._id}
               onClick={() => updateUrl("category", cat.slug)}
-              className={`px-4 py-1 rounded-lg ${ selectedCategory === cat.slug ? "bg-primary text-primary-foreground" : "border border-border text-foreground" }`}>
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === cat.slug ? "bg-primary text-white" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"}`}
+            >
               {cat.name}
             </button>
           ))}

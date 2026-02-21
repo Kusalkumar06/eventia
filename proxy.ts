@@ -4,7 +4,7 @@ import { NextRequest,NextResponse } from "next/server";
 export async function proxy(req : NextRequest){
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-  const publicRoutes = ['/signin','/signup','/verify-otp','/','/events'];
+  const publicRoutes = ['/signin','/','/events'];
 
   if (!token && !publicRoutes.includes(req.nextUrl.pathname)) {
     const loginUrl = new URL('/signin',req.url);
@@ -18,7 +18,6 @@ export async function proxy(req : NextRequest){
 
   if (token && publicRoutes.includes(req.nextUrl.pathname)){
     const homeUrl = new URL('/',req.url);
-
     return NextResponse.redirect(homeUrl);
   }
 
@@ -26,5 +25,5 @@ export async function proxy(req : NextRequest){
 }
 
 export const config = {
-  matcher: ['/create','/my-events','/profile','/admin/:path*']
+  matcher: ['/create','/my-events','/profile','/admin/:path*','/create-event']
 }

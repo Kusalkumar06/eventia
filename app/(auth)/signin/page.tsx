@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import {Mail,Lock,User,Eye,EyeOff,CheckCircle,} from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, CheckCircle } from "lucide-react";
 import { getSession } from "next-auth/react";
 
 export default function AuthPage() {
@@ -69,9 +69,8 @@ export default function AuthPage() {
         setSignUpError(data.error || "Registration failed");
       } else {
         setShowOtpPanel(true);
-        console.log("OTP sent (check server logs if dev)");
       }
-    } catch (err) {
+    } catch {
       setSignUpError("An unexpected error occurred.");
     }
   };
@@ -92,7 +91,6 @@ export default function AuthPage() {
         setOtpError(data.error || "Verification failed");
       } else {
         setOtpMessage("Verified! Signing you in...");
-        // Auto sign in after verification
         const loginRes = await signIn("credentials", {
           email: signUpEmail,
           password: signUpPassword,
@@ -104,53 +102,64 @@ export default function AuthPage() {
           );
           setTimeout(() => {
             setShowOtpPanel(false);
-            setIsRightPanelActive(false); // Go to sign in
+            setIsRightPanelActive(false);
           }, 2000);
         } else {
           router.push("/");
         }
       }
-    } catch (err) {
+    } catch {
       setOtpError("An error occurred during verification.");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-neutral-100 py-12 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="flex items-center justify-center min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8 font-sans transition-colors duration-300">
       <div
-        className={`relative bg-white rounded-2xl shadow-2xl overflow-hidden max-w-full min-h-[550px] w-[868px] transition-all duration-300 ${
+        className={`relative bg-card rounded-2xl shadow-2xl overflow-hidden max-w-full min-h-[550px] w-[868px] border border-border transition-all duration-300 ${
           isRightPanelActive ? "right-panel-active" : ""
         }`}
         id="container"
       >
-        {/* Sign Up Container */}
         <div
-          className={`form-container sign-up-container absolute top-0 h-full transition-all duration-600 ease-in-out left-0 w-1/2 z-10 ${isRightPanelActive ? "opacity-100 translate-x-full z-50 animate-show" : "opacity-0 z-10"}`}
+          className={`form-container sign-up-container absolute top-0 h-full transition-all duration-600 ease-in-out left-0 w-1/2 z-10 ${
+            isRightPanelActive
+              ? "opacity-100 translate-x-full z-50 animate-show"
+              : "opacity-0 z-10"
+          }`}
         >
           {!showOtpPanel ? (
             <form
               onSubmit={handleSignUp}
-              className="bg-white flex flex-col items-center justify-center h-full px-12 text-center"
+              className="bg-card flex flex-col items-center justify-center h-full px-12 text-center"
             >
-              <h1 className="font-bold text-3xl mb-4 text-neutral-800">
+              <h1 className="font-bold text-3xl mb-4 text-foreground">
                 Create Account
               </h1>
               <div className="social-container flex gap-4 my-4">
                 <button
                   type="button"
-                  onClick={() => signIn("google", { callbackUrl: "/post-login" })}
-                  className="border border-neutral-300 rounded-full w-10 h-10 flex items-center justify-center text-neutral-700 hover:bg-neutral-50 transition"
+                  onClick={() =>
+                    signIn("google", { callbackUrl: "/post-login" })
+                  }
+                  className="border border-border rounded-full w-10 h-10 flex items-center justify-center text-foreground hover:bg-muted transition"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M564 325.8C564 467.3 467.1 568 324 568C186.8 568 76 457.2 76 320C76 182.8 186.8 72 324 72C390.8 72 447 96.5 490.3 136.9L422.8 201.8C334.5 116.6 170.3 180.6 170.3 320C170.3 406.5 239.4 476.6 324 476.6C422.2 476.6 459 406.2 464.8 369.7L324 369.7L324 284.4L560.1 284.4C562.4 297.1 564 309.3 564 325.8z"/></svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 640 640"
+                    className="fill-current"
+                  >
+                    <path d="M564 325.8C564 467.3 467.1 568 324 568C186.8 568 76 457.2 76 320C76 182.8 186.8 72 324 72C390.8 72 447 96.5 490.3 136.9L422.8 201.8C334.5 116.6 170.3 180.6 170.3 320C170.3 406.5 239.4 476.6 324 476.6C422.2 476.6 459 406.2 464.8 369.7L324 369.7L324 284.4L560.1 284.4C562.4 297.1 564 309.3 564 325.8z" />
+                  </svg>
                 </button>
               </div>
-              <span className="text-xs text-neutral-500 mb-4">
+              <span className="text-xs text-muted-foreground mb-4">
                 or use your email for registration
               </span>
 
               <div className="w-full relative mb-3">
                 <User
-                  className="absolute left-3 top-3.5 text-neutral-400"
+                  className="absolute left-3 top-3.5 text-muted-foreground"
                   size={16}
                 />
                 <input
@@ -158,14 +167,14 @@ export default function AuthPage() {
                   placeholder="Name"
                   value={signUpName}
                   onChange={(e) => setSignUpName(e.target.value)}
-                  className="bg-neutral-100 border-none px-4 py-3 pl-10 w-full outline-none focus:ring-2 focus:ring-primary/50"
+                  className="bg-muted border border-transparent rounded-lg px-4 py-3 pl-10 w-full outline-none focus:ring-2 focus:ring-primary/50 text-foreground"
                   required
                 />
               </div>
 
               <div className="w-full relative mb-3">
                 <Mail
-                  className="absolute left-3 top-3.5 text-neutral-400"
+                  className="absolute left-3 top-3.5 text-muted-foreground"
                   size={16}
                 />
                 <input
@@ -173,14 +182,14 @@ export default function AuthPage() {
                   placeholder="Email"
                   value={signUpEmail}
                   onChange={(e) => setSignUpEmail(e.target.value)}
-                  className="bg-neutral-100 border-none px-4 py-3 pl-10 w-full outline-none focus:ring-2 focus:ring-primary/50"
+                  className="bg-muted border border-transparent rounded-lg px-4 py-3 pl-10 w-full outline-none focus:ring-2 focus:ring-primary/50 text-foreground"
                   required
                 />
               </div>
 
               <div className="w-full relative mb-3">
                 <Lock
-                  className="absolute left-3 top-3.5 text-neutral-400"
+                  className="absolute left-3 top-3.5 text-muted-foreground"
                   size={16}
                 />
                 <input
@@ -188,13 +197,13 @@ export default function AuthPage() {
                   placeholder="Password"
                   value={signUpPassword}
                   onChange={(e) => setSignUpPassword(e.target.value)}
-                  className="bg-neutral-100 border-none px-4 py-3 pl-10 pr-10 w-full outline-none focus:ring-2 focus:ring-primary/50"
+                  className="bg-muted border border-transparent rounded-lg px-4 py-3 pl-10 pr-10 w-full outline-none focus:ring-2 focus:ring-primary/50 text-foreground"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3.5 text-neutral-400 hover:text-neutral-600"
+                  className="absolute right-3 top-3.5 text-muted-foreground hover:text-foreground"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -211,20 +220,20 @@ export default function AuthPage() {
           ) : (
             <form
               onSubmit={handleVerifyOtp}
-              className="bg-white flex flex-col items-center justify-center h-full px-12 text-center animate-fade-in"
+              className="bg-card flex flex-col items-center justify-center h-full px-12 text-center animate-fade-in"
             >
               <CheckCircle size={48} className="text-primary mb-4" />
-              <h1 className="font-bold text-3xl mb-4 text-neutral-800">
+              <h1 className="font-bold text-3xl mb-4 text-foreground">
                 Verify OTP
               </h1>
-              <p className="text-sm text-neutral-600 mb-6 font-light">
+              <p className="text-sm text-muted-foreground mb-6 font-light">
                 We have sent a code to{" "}
                 <span className="font-semibold">{signUpEmail}</span>
               </p>
 
               <div className="w-full relative mb-3">
                 <Lock
-                  className="absolute left-3 top-3.5 text-neutral-400"
+                  className="absolute left-3 top-3.5 text-muted-foreground"
                   size={16}
                 />
                 <input
@@ -232,7 +241,7 @@ export default function AuthPage() {
                   placeholder="Enter Validator/OTP Code"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  className="bg-neutral-100 border-none px-4 py-3 pl-10 w-full outline-none focus:ring-2 focus:ring-primary/50 text-center tracking-widest text-lg"
+                  className="bg-muted border border-transparent rounded-lg px-4 py-3 pl-10 w-full outline-none focus:ring-2 focus:ring-primary/50 text-center tracking-widest text-lg text-foreground"
                   required
                 />
               </div>
@@ -251,7 +260,7 @@ export default function AuthPage() {
               <button
                 type="button"
                 onClick={() => setShowOtpPanel(false)}
-                className="mt-4 text-xs text-neutral-500 underline hover:text-primary"
+                className="mt-4 text-xs text-muted-foreground underline hover:text-primary transition-colors"
               >
                 Back to Registration
               </button>
@@ -259,29 +268,38 @@ export default function AuthPage() {
           )}
         </div>
 
-        {/* Sign In Container */}
         <div
-          className={`form-container sign-in-container absolute top-0 h-full transition-all duration-600 ease-in-out left-0 w-1/2 z-20 ${isRightPanelActive ? "translate-x-full" : ""}`}
+          className={`form-container sign-in-container absolute top-0 h-full transition-all duration-600 ease-in-out left-0 w-1/2 z-20 ${
+            isRightPanelActive ? "translate-x-full" : ""
+          }`}
         >
           <form
             onSubmit={handleSignIn}
-            className="bg-white flex flex-col items-center justify-center h-full px-12 text-center"
+            className="bg-card flex flex-col items-center justify-center h-full px-12 text-center"
           >
-            <h1 className="font-bold text-3xl mb-4 text-neutral-800">
-              Sign in
-            </h1>
+            <h1 className="font-bold text-3xl mb-4 text-foreground">Sign in</h1>
             <div className="social-container flex gap-4 my-4">
-              <button type="button" onClick={() => signIn("google", { callbackUrl: "/post-login" })} className="border border-neutral-300 rounded-full w-10 h-10 flex items-center justify-center text-neutral-700 hover:bg-neutral-50 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M564 325.8C564 467.3 467.1 568 324 568C186.8 568 76 457.2 76 320C76 182.8 186.8 72 324 72C390.8 72 447 96.5 490.3 136.9L422.8 201.8C334.5 116.6 170.3 180.6 170.3 320C170.3 406.5 239.4 476.6 324 476.6C422.2 476.6 459 406.2 464.8 369.7L324 369.7L324 284.4L560.1 284.4C562.4 297.1 564 309.3 564 325.8z"/></svg>
+              <button
+                type="button"
+                onClick={() => signIn("google", { callbackUrl: "/post-login" })}
+                className="border border-border rounded-full w-10 h-10 flex items-center justify-center text-foreground hover:bg-muted transition"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 640 640"
+                  className="fill-current"
+                >
+                  <path d="M564 325.8C564 467.3 467.1 568 324 568C186.8 568 76 457.2 76 320C76 182.8 186.8 72 324 72C390.8 72 447 96.5 490.3 136.9L422.8 201.8C334.5 116.6 170.3 180.6 170.3 320C170.3 406.5 239.4 476.6 324 476.6C422.2 476.6 459 406.2 464.8 369.7L324 369.7L324 284.4L560.1 284.4C562.4 297.1 564 309.3 564 325.8z" />
+                </svg>
               </button>
             </div>
-            <span className="text-xs text-neutral-500 mb-4">
+            <span className="text-xs text-muted-foreground mb-4">
               or use your account
             </span>
 
             <div className="w-full relative mb-3">
               <Mail
-                className="absolute left-3 top-3.5 text-neutral-400"
+                className="absolute left-3 top-3.5 text-muted-foreground"
                 size={16}
               />
               <input
@@ -289,14 +307,14 @@ export default function AuthPage() {
                 placeholder="Email"
                 value={signInEmail}
                 onChange={(e) => setSignInEmail(e.target.value)}
-                className="bg-neutral-100 border-none px-4 py-3 pl-10 w-full outline-none focus:ring-2 focus:ring-primary/50"
+                className="bg-muted border border-transparent rounded-lg px-4 py-3 pl-10 w-full outline-none focus:ring-2 focus:ring-primary/50 text-foreground"
                 required
               />
             </div>
 
             <div className="w-full relative mb-3">
               <Lock
-                className="absolute left-3 top-3.5 text-neutral-400"
+                className="absolute left-3 top-3.5 text-muted-foreground"
                 size={16}
               />
               <input
@@ -304,13 +322,13 @@ export default function AuthPage() {
                 placeholder="Password"
                 value={signInPassword}
                 onChange={(e) => setSignInPassword(e.target.value)}
-                className="bg-neutral-100 border-none px-4 py-3 pl-10 pr-10 w-full outline-none focus:ring-2 focus:ring-primary/50"
+                className="bg-muted border border-transparent rounded-lg px-4 py-3 pl-10 pr-10 w-full outline-none focus:ring-2 focus:ring-primary/50 text-foreground"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3.5 text-neutral-400 hover:text-neutral-600"
+                className="absolute right-3 top-3.5 text-muted-foreground hover:text-foreground"
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -318,7 +336,7 @@ export default function AuthPage() {
 
             <a
               href="#"
-              className="text-neutral-700 text-xs no-underline my-2 hover:underline"
+              className="text-muted-foreground text-xs no-underline my-2 hover:underline transition-colors"
             >
               Forgot your password?
             </a>
@@ -333,36 +351,43 @@ export default function AuthPage() {
           </form>
         </div>
 
-        {/* Overlay Container */}
         <div
-          className={`overlay-container absolute top-0 left-1/2 w-1/2 h-full overflow-hidden transition-transform duration-600 ease-in-out z-[100] ${isRightPanelActive ? "-translate-x-full" : ""}`}
+          className={`overlay-container absolute top-0 left-1/2 w-1/2 h-full overflow-hidden transition-transform duration-600 ease-in-out z-100 ${
+            isRightPanelActive ? "-translate-x-full" : ""
+          }`}
         >
           <div
-            className={`overlay bg-gradient-to-r from-primary to-rose-400 bg-no-repeat bg-cover bg-center text-white relative -left-full h-full w-[200%] transform transition-transform duration-600 ease-in-out ${isRightPanelActive ? "translate-x-1/2" : "translate-x-0"}`}
+            className={`overlay bg-primary dark:bg-[#FEF3C7] text-primary-foreground dark:text-zinc-900 relative -left-full h-full w-[200%] transform transition-transform duration-600 ease-in-out ${
+              isRightPanelActive ? "translate-x-1/2" : "translate-x-0"
+            }`}
           >
             <div
-              className={`overlay-panel overlay-left absolute flex items-center justify-center flex-col p-10 text-center top-0 h-full w-1/2 transform transition-transform duration-600 ease-in-out ${isRightPanelActive ? "translate-x-0" : "-translate-x-[20%]"}`}
+              className={`overlay-panel overlay-left absolute flex items-center justify-center flex-col p-10 text-center top-0 h-full w-1/2 transform transition-transform duration-600 ease-in-out ${
+                isRightPanelActive ? "translate-x-0" : "-translate-x-[20%]"
+              }`}
             >
               <h1 className="font-bold text-3xl mb-4">Welcome Back!</h1>
-              <p className="text-sm font-light leading-6 mb-8">
+              <p className="text-sm font-light leading-6 mb-8 opacity-90">
                 To keep connected with us please login with your personal info
               </p>
               <button
-                className="ghost rounded-full border border-white bg-transparent text-white text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 focus:outline-none"
+                className="ghost rounded-full border border-current bg-transparent text-current text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 focus:outline-none"
                 onClick={() => setIsRightPanelActive(false)}
               >
                 Sign In
               </button>
             </div>
             <div
-              className={`overlay-panel overlay-right absolute right-0 flex items-center justify-center flex-col p-10 text-center top-0 h-full w-1/2 transform transition-transform duration-600 ease-in-out ${isRightPanelActive ? "translate-x-[20%]" : "translate-x-0"}`}
+              className={`overlay-panel overlay-right absolute right-0 flex items-center justify-center flex-col p-10 text-center top-0 h-full w-1/2 transform transition-transform duration-600 ease-in-out ${
+                isRightPanelActive ? "translate-x-[20%]" : "translate-x-0"
+              }`}
             >
               <h1 className="font-bold text-3xl mb-4">Hello, Friend!</h1>
-              <p className="text-sm font-light leading-6 mb-8">
+              <p className="text-sm font-light leading-6 mb-8 opacity-90">
                 Enter your personal details and start your journey with us
-              </p>
+              </p>  
               <button
-                className="ghost rounded-full border border-white bg-transparent text-white text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 focus:outline-none"
+                className="ghost rounded-full border border-current bg-transparent text-current text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 focus:outline-none 0 "
                 onClick={() => setIsRightPanelActive(true)}
               >
                 Sign Up

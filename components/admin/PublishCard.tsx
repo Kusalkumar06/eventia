@@ -1,0 +1,109 @@
+import React from "react";
+import { EventDTO } from "@/types/types";
+import { MapPin, Users, Calendar, Globe, User, Eye, X } from "lucide-react";
+import Link from "next/link";
+
+const formatEventDate = (start: string | Date, end: string | Date): string => {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  const options: Intl.DateTimeFormatOptions = {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  };
+
+  if (startDate.toDateString() === endDate.toDateString()) {
+    return startDate.toLocaleDateString("en-GB", options);
+  } else {
+    if (
+      startDate.getMonth() === endDate.getMonth() &&
+      startDate.getFullYear() === endDate.getFullYear()
+    ) {
+      return `${startDate.getDate()}–${endDate.getDate()} ${startDate.toLocaleDateString("en-GB", { month: "long", year: "numeric" })}`;
+    } else {
+      return `${startDate.toLocaleDateString("en-GB", { day: "numeric", month: "short" })} – ${endDate.toLocaleDateString("en-GB", options)}`;
+    }
+  }
+};
+
+const PublishCard = ({ event }: { event: EventDTO }) => {
+  const {
+    title,
+    slug,
+    category,
+    mode,
+    startDate,
+    endDate,
+    status,
+    organizer,
+    registrationsCount,
+  } = event;
+  return (
+    <article className="event-card bg-card text-foreground space-y-2 border border-border rounded-xl p-5 flex flex-col h-full shadow-lg hover:shadow-2xl transition-all duration-300">
+      <div>
+        <div className="flex justify-between items-center">
+          <p className="text-primary text-xs md:text-[15px] font-bold">
+            {category.name}
+          </p>
+          <button className="text-xs px-4 py-1 bg-muted text-muted-foreground rounded-md ">
+            {status}
+          </button>
+        </div>
+        <h4 className="text-sm md:text-lg font-bold">{title}</h4>
+      </div>
+      <div className="space-y-2 text-muted-foreground">
+        <div className="flex items-center gap-2 ">
+          <User className="w-3 h-3 md:w-4 md:h-4" />
+          <p className="text-xs md:text-[16px]">{organizer.name}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Calendar className="w-3 h-3 md:w-4 md:h-4" />
+          <p className="text-xs md:text-[16px]">
+            {formatEventDate(startDate, endDate)}
+          </p>
+        </div>
+        <div>
+          {mode === "online" ? (
+            <div className="flex items-center gap-2">
+              <Globe className="w-3 h-3 md:w-4 md:h-4" />
+              <p className="text-xs md:text-[16px]">Online Event</p>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <MapPin className="w-3 h-3 md:w-4 md:h-4" />
+              <p className="text-xs md:text-[16px]">Offline Event</p>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-2 ">
+          <Users className="w-3 h-3 md:w-4 md:h-4" />
+          <p className="text-xs md:text-[16px]">
+            {registrationsCount} Registrations
+          </p>
+        </div>
+      </div>
+      <footer className="mt-auto space-y-2">
+        <hr className="border-border opacity-30 mb-2" />
+        <div className="grid grid-cols-[repeat(5,1fr)] grid-rows-[repeat(1,1fr)] gap-2">
+          <Link
+            href={`/events/${slug}`}
+            className="row-start-1 row-end-2 col-start-1 col-end-3 text-primary bg-primary/10 hover:bg-primary hover:text-primary-foreground transition-all duration-300 text-center rounded-lg flex gap-2 justify-center items-center text-xs md:text-[16px]"
+          >
+            <Eye className="h-3 md:h-4 w-3 md:w-4" />
+            <span>Details</span>
+          </Link>
+          <button className="row-start-1 row-end-2 col-start-3 col-end-5 flex justify-center items-center gap-2 bg-muted text-muted-foreground hover:bg-muted/80 transition-colors rounded-lg py-1 px-3 text-xs md:text-[16px]">
+            <Users className="h-3 md:h-4 w-3 md:w-4" />
+            <span>Guests</span>
+          </button>
+          <button className="row-start-1 row-end-2 col-start-5 col-end-6 flex justify-center items-center gap-2 text-foreground rounded-lg text-primaryp">
+            <X className="h-3 md:h-4 w-3 md:w-4" />
+          </button>
+        </div>
+      </footer>
+    </article>
+  );
+};
+
+export default PublishCard;

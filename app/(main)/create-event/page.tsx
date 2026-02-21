@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 
-// Define the interface for the form data
 interface EventFormData {
   title: string;
   description: string;
@@ -23,40 +22,61 @@ interface EventFormData {
   maxRegistrations: string;
 }
 
+interface EventPayload {
+  title: string;
+  description: string;
+  shortDescription?: string;
+  category?: string;
+  tags?: string[];
+  mode: "online" | "offline";
+  organizer: string;
+  startDate: string;
+  endDate: string;
+  isRegistrationRequired: boolean;
+  onlineURL?: string;
+  location?: {
+    venue?: string;
+    city?: string;
+    state?: string;
+    zip?: string;
+    country?: string;
+  };
+  maxRegistrations?: number;
+}
+
 export default function CreateEventPage() {
   const [formData, setFormData] = useState<EventFormData>({
-  title: "Intro to Next.js App Router",
-  description: "A beginner-friendly session covering the basics of Next.js App Router, routing, layouts, and API routes.",
-  shortDescription: "Learn Next.js App Router basics in a free session.",
-  category: "",
+    title: "Intro to Next.js App Router",
+    description:
+      "A beginner-friendly session covering the basics of Next.js App Router, routing, layouts, and API routes.",
+    shortDescription: "Learn Next.js App Router basics in a free session.",
+    category: "",
 
-  tags: "nextjs,react,web",
+    tags: "nextjs,react,web",
 
-  mode: "online",
+    mode: "online",
 
-  venue: "",
-  city: "",
-  state: "",
-  zip: "",
-  country: "",
+    venue: "",
+    city: "",
+    state: "",
+    zip: "",
+    country: "",
 
-  onlineURL: "https://meet.google.com/abc-defg-hij",
+    onlineURL: "https://meet.google.com/abc-defg-hij",
 
-  startDate: "2026-02-15T10:00",
-  endDate: "2026-02-15T12:00",
+    startDate: "2026-02-15T10:00",
+    endDate: "2026-02-15T12:00",
 
-  organizer: "65c9f0a1a2b3c4d5e6f78901", // dummy ObjectId string
+    organizer: "65c9f0a1a2b3c4d5e6f78901",
 
-  isRegistrationRequired: false,
-  maxRegistrations: ""
-}
-);
+    isRegistrationRequired: false,
+    maxRegistrations: "",
+  });
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  // Handle input changes
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -64,7 +84,6 @@ export default function CreateEventPage() {
   ) => {
     const { name, value, type } = e.target;
 
-    // Handle checkbox
     if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData((prev) => ({ ...prev, [name]: checked }));
@@ -73,7 +92,6 @@ export default function CreateEventPage() {
     }
   };
 
-  // Handle submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -81,7 +99,6 @@ export default function CreateEventPage() {
     setSuccess(false);
 
     try {
-      // Prepare payload
       const tagsArray = formData.tags
         ? formData.tags
             .split(",")
@@ -89,7 +106,7 @@ export default function CreateEventPage() {
             .filter((tag) => tag !== "")
         : [];
 
-      const payload: any = {
+      const payload: EventPayload = {
         title: formData.title,
         description: formData.description,
         shortDescription: formData.shortDescription || undefined,
@@ -134,10 +151,9 @@ export default function CreateEventPage() {
       const data = await res.json();
       console.log("Event created successfully:", data);
       setSuccess(true);
-      // Reset form or redirect (not requested)
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.message || "Something went wrong");
+      setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setIsLoading(false);
     }
@@ -157,7 +173,6 @@ export default function CreateEventPage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Title */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Title *
@@ -172,7 +187,6 @@ export default function CreateEventPage() {
           />
         </div>
 
-        {/* Description */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Description *
@@ -187,7 +201,6 @@ export default function CreateEventPage() {
           />
         </div>
 
-        {/* Short Description */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Short Description (Max 200 chars)
@@ -202,7 +215,6 @@ export default function CreateEventPage() {
           />
         </div>
 
-        {/* Category */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Category (Optimizer ID)
@@ -217,7 +229,6 @@ export default function CreateEventPage() {
           />
         </div>
 
-        {/* Tags */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Tags (comma separated)
@@ -232,7 +243,6 @@ export default function CreateEventPage() {
           />
         </div>
 
-        {/* Mode */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Mode *
@@ -249,7 +259,6 @@ export default function CreateEventPage() {
           </select>
         </div>
 
-        {/* Conditional Fields based on Mode */}
         {formData.mode === "online" ? (
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -323,7 +332,6 @@ export default function CreateEventPage() {
           </div>
         )}
 
-        {/* Dates */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -353,7 +361,6 @@ export default function CreateEventPage() {
           </div>
         </div>
 
-        {/* Organizer */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Organizer ID *
@@ -369,7 +376,6 @@ export default function CreateEventPage() {
           />
         </div>
 
-        {/* Registration */}
         <div className="flex items-center">
           <input
             type="checkbox"
@@ -387,7 +393,6 @@ export default function CreateEventPage() {
           </label>
         </div>
 
-        {/* Max Registrations */}
         {formData.isRegistrationRequired && (
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -403,7 +408,6 @@ export default function CreateEventPage() {
           </div>
         )}
 
-        {/* Submit Button */}
         <button
           type="submit"
           disabled={isLoading}

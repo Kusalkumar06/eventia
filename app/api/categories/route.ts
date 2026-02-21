@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { connectDb } from "@/app/utilities/db";
-import { CategoryModel } from "@/app/api/models/category.model";
+import { connectDb } from "@/lib/db";
+import { CategoryModel } from "@/models/category.model";
 
 export async function GET() {
   try {

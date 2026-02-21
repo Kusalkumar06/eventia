@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import { connectDb } from "@/app/utilities/db";
-import { User } from "../../models/user.model";
-import { Otp } from "../../models/otp.model";
-import { generateOtp } from "@/app/lib/generateOtp";
+import { connectDb } from "@/lib/db";
+import { UserModel } from "../../../../models/user.model";
+import { Otp } from "../../../../models/otp.model";
+import { generateOtp } from "@/lib/generateOtp";
 
 export async function POST(req: NextRequest){
   try {
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest){
       );
     }
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await UserModel.findOne({ email });
 
     if (existingUser) {
       return NextResponse.json(
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest){
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({
+    const newUser = await UserModel.create({
       name,
       email,
       password: hashedPassword,

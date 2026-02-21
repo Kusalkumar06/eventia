@@ -1,9 +1,9 @@
 import {NextRequest,NextResponse} from "next/server";
-import { connectDb } from "@/app/utilities/db";
-import { Otp } from "../../models/otp.model";
-import { User } from "../../models/user.model";
+import { connectDb } from "@/lib/db";
+import { Otp } from "../../../../models/otp.model";
+import { UserModel } from "../../../../models/user.model";
 import bcrypt from "bcrypt";
-import { otpVerifyLimiter } from "@/app/lib/rateLimiter";
+import { otpVerifyLimiter } from "@/lib/rateLimiter";
 
 
 export async function POST(req: NextRequest) {
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (purpose === "verify") {
-      await User.updateOne({ email }, { emailVerified: true });
+      await UserModel.updateOne({ email }, { emailVerified: true });
     }
 
     const isValid = await bcrypt.compare(otp, existingOtp.otp);

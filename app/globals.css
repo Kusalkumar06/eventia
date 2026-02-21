@@ -1,47 +1,90 @@
 @import "tailwindcss";
 
+/* REFRESH_TAG: HYBRID_GOLD_VOLCANO_V4_PARCHMENT */
+
+@theme {
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  /* Custom Fonts */
+  --font-heading: var(--font-heading);
+  --font-subheading: var(--font-subheading);
+  --font-paragraph: var(--font-paragraph);
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* =========================================================
-   RUNTIME COLOR TOKENS
+   RUNTIME COLOR TOKENS (HYBRID: GOLD LIGHT / VOLCANO DARK)
 ========================================================= */
 
 :root {
-  --color-background: 255 255 255;
-  --color-foreground: 0 0 0;
+  /* Midnight Gold (Enhanced Light Mode) */
+  --color-background: 254 243 199; /* Amber-100 (Warm Parchment) */
+  --color-foreground: 69 26 3; /* Amber-950 (Rich Coffee) */
 
-  --color-card: 255 255 255;
-  --color-border: 0 0 0;
+  --color-card: 255 255 255; /* Neutral White (Pops off the parchment) */
+  --color-border: 252 211 77; /* Amber-300 */
 
-  --color-primary: 255 51 51;
+  --color-primary: 217 119 6; /* Amber-600 (Pure Gold) */
   --color-primary-foreground: 255 255 255;
 
-  --color-muted: 240 240 240;
-  --color-muted-foreground: 51 51 51;
+  --color-muted: 255 251 235; /* Amber-50 */
+  --color-muted-foreground: 180 83 9; /* Amber-700 */
 
-  --color-ring: 255 51 51;
+  --color-ring: 245 158 11; /* Amber-500 */
+
+  --sidebar-background: 255 255 255;
+  --sidebar-foreground: 69 26 3;
+  --sidebar-primary: 217 119 6;
+  --sidebar-primary-foreground: 255 255 255;
+  --sidebar-accent: 255 251 235;
+  --sidebar-accent-foreground: 69 26 3;
+  --sidebar-border: 252 211 77;
+  --sidebar-ring: 245 158 11;
 }
 
 .dark {
-  --color-background: 0 0 0;
-  --color-foreground: 255 255 255;
+  /* Volcano Ash (Dark Mode) */
+  --color-background: 9 9 11; /* Zinc-950 */
+  --color-foreground: 250 250 250; /* Zinc-50 */
 
-  --color-card: 51 51 51;
-  --color-border: 255 255 255;
+  --color-card: 24 24 27; /* Zinc-900 */
+  --color-border: 39 39 42; /* Zinc-800 */
 
-  --color-primary: 255 102 102;
-  --color-primary-foreground: 0 0 0;
+  --color-primary: 251 146 60; /* Orange-400 (Volcano) */
+  --color-primary-foreground: 12 10 9; /* Zinc-950 */
 
-  --color-muted: 51 51 51;
-  --color-muted-foreground: 204 204 204;
+  --color-muted: 39 39 42; /* Zinc-800 */
+  --color-muted-foreground: 161 161 170; /* Zinc-400 */
 
-  --color-ring: 255 102 102;
-}
+  --color-ring: 234 88 12; /* Orange-600 */
 
-/* =========================================================
-   FONTS
-========================================================= */
-
-.font {
-  font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  --sidebar-background: 12 10 9;
+  --sidebar-foreground: 212 212 216; /* Zinc-300 */
+  --sidebar-primary: 251 146 60;
+  --sidebar-primary-foreground: 12 10 9;
+  --sidebar-accent: 39 39 42;
+  --sidebar-accent-foreground: 250 250 250;
+  --sidebar-border: 39 39 42;
+  --sidebar-ring: 234 88 12;
 }
 
 /* =========================================================
@@ -49,110 +92,95 @@
 ========================================================= */
 
 @layer components {
-
   /* backgrounds */
-
   .bg-background {
     background-color: rgb(var(--color-background));
   }
-
   .bg-card {
     background-color: rgb(var(--color-card));
   }
-
   .bg-muted {
     background-color: rgb(var(--color-muted));
   }
-
   .bg-primary {
     background-color: rgb(var(--color-primary));
   }
 
   /* text */
-
   .text-foreground {
     color: rgb(var(--color-foreground));
   }
-
   .text-muted-foreground {
     color: rgb(var(--color-muted-foreground));
   }
-
   .text-primary {
     color: rgb(var(--color-primary));
   }
-
   .text-primary-foreground {
     color: rgb(var(--color-primary-foreground));
   }
 
   /* borders */
-
   .border-border {
     border-color: rgb(var(--color-border));
   }
 
   /* ring */
-
   .ring-primary {
     --tw-ring-color: rgb(var(--color-ring));
   }
 
+  /* sidebar mapping */
+  .bg-sidebar {
+    background-color: rgb(var(--sidebar-background));
+  }
+  .text-sidebar-foreground {
+    color: rgb(var(--sidebar-foreground));
+  }
+  .bg-sidebar-primary {
+    background-color: rgb(var(--sidebar-primary));
+  }
+  .text-sidebar-primary-foreground {
+    color: rgb(var(--sidebar-primary-foreground));
+  }
+  .bg-sidebar-accent {
+    background-color: rgb(var(--sidebar-accent));
+  }
+  .text-sidebar-accent-foreground {
+    color: rgb(var(--sidebar-accent-foreground));
+  }
+  .border-sidebar-border {
+    border-color: rgb(var(--sidebar-border));
+  }
 
-  /* =====================================================
-     OPACITY VARIANTS USED IN YOUR CARD UI
-  ===================================================== */
-
+  /* Opacity variants */
   .bg-primary\/10 {
     background-color: rgb(var(--color-primary) / 0.1);
   }
-
   .hover\:bg-primary\/90:hover {
     background-color: rgb(var(--color-primary) / 0.9);
   }
-
-  .text-foreground\/70 {
-    color: rgb(var(--color-foreground) / 0.7);
-  }
-
-
-  /* =====================================================
-     SHADOW UTILITIES (MATCHING YOUR THEME VALUES)
-  ===================================================== */
-
-  /* ---------- light ---------- */
-
-  .shadow-2xs { box-shadow: 0px 0px rgba(0,0,0,0.4); }
-  .shadow-xs  { box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.4); }
-  .shadow-sm  { box-shadow: 0px 0px 6px 0px rgba(0,0,0,0.4); }
-  .shadow-md  { box-shadow: 0px 0px 12px -1px rgba(0,0,0,0.4); }
-  .shadow-lg  { box-shadow: 0px 0px 20px -3px rgba(0,0,0,0.4); }
-  .shadow-xl  { box-shadow: 0px 0px 28px -5px rgba(0,0,0,0.4); }
-  .shadow-2xl { box-shadow: 0px 0px 28px -12px rgba(0,0,0,1); }
-
-  .hover\:shadow-lg:hover {
-    box-shadow: 0px 0px 20px -3px rgba(0,0,0,0.4);
-  }
-
-  .dark .hover\:shadow-lg:hover {
-  box-shadow: 0px 0px 20px -3px red !important;
 }
 
+/* =========================================================
+   FONTS
+========================================================= */
 
-  /* ---------- dark ---------- */
+body,
+p {
+  font-family: var(--font-paragraph), sans-serif;
+}
 
-  .dark .shadow-2xs { box-shadow: 0px 2px rgba(0,0,0,0.4); }
-  .dark .shadow-xs  { box-shadow: 0px 2px 6px 0px rgba(0,0,0,0.4); }
-  .dark .shadow-sm  { box-shadow: 0px 2px 9px 0px rgba(0,0,0,0.4); }
-  .dark .shadow-md  { box-shadow: 0px 4px 18px -1px rgba(0,0,0,0.4); }
-  .dark .shadow-lg  { box-shadow: 0px 8px 30px -3px rgba(0,0,0,0.4); }
-  .dark .shadow-xl  { box-shadow: 0px 12px 42px -5px rgba(0,0,0,0.4); }
-  .dark .shadow-2xl { box-shadow: 0px 16px 46px -12px rgba(0,0,0,1); }
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading), sans-serif;
+}
 
-  .dark .hover\:shadow-lg:hover {
-    box-shadow: 0px 8px 30px -3px rgba(0,0,0,0.4);
-  }
-
+h4,
+h5,
+h6 {
+  font-family: var(--font-subheading), sans-serif;
 }
 
 /* =========================================================

@@ -1,43 +1,22 @@
 import FilterComponent from "@/components/FilterComponent";
 import EventTab from "@/components/EventTab";
-import { EventDTO } from "@/app/lib/types";
+
+import { getEvents } from "@/utilities/services/eventActions";
 
 type HomeProps = {
   searchParams: Promise<{
-    search?: string;
     category?: string;
   }>;
 };
 
-async function getEvents(
-  search?: string,
-  category?: string,
-): Promise<EventDTO[]> {
-  const params = new URLSearchParams();
-
-  if (search) params.set("search", search);
-  if (category && category !== "all") params.set("category", category);
-
-  const baseUrl = process.env.SITE_URL ?? "http://localhost:3000";
-
-  const res = await fetch(`${baseUrl}/api/events?${params.toString()}`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch events");
-  }
-
-  return res.json();
-}
-
 const Events = async ({ searchParams }: HomeProps) => {
   const params = await searchParams;
 
-  const search = params.search ?? "";
   const selectedCategory = params.category ?? "all";
 
-  const events = await getEvents(search, selectedCategory);
+  const events = await getEvents({
+    category: selectedCategory === "all" ? undefined : selectedCategory,
+  });
 
   return (
     <div>
@@ -48,7 +27,7 @@ const Events = async ({ searchParams }: HomeProps) => {
         </p>
       </div>
       <div className="px-18 rounded-md">
-        <FilterComponent search={search} selectedCategory={selectedCategory} />
+        <FilterComponent selectedCategory={selectedCategory} />
       </div>
 
       <div>

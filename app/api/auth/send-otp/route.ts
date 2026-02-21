@@ -1,9 +1,9 @@
 import {NextRequest, NextResponse} from "next/server";
-import { connectDb } from "@/app/utilities/db";
-import {Otp} from "../../models/otp.model";
-import {generateOtp} from "@/app/lib/generateOtp";
+import { connectDb } from "@/lib/db";
+import {Otp} from "../../../../models/otp.model";
+import {generateOtp} from "@/lib/generateOtp";
 import bcrypt from "bcrypt"
-import { otpResendLimiter } from "@/app/lib/rateLimiter";
+import { otpResendLimiter } from "@/lib/rateLimiter";
 
 
 export async function POST(req: NextRequest){

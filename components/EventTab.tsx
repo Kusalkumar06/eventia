@@ -1,6 +1,6 @@
 "use client";
 import EventCard from "@/components/EventCard";
-import { EventDTO } from "@/app/lib/types";
+import { EventDTO } from "@/types/types";
 import { useState } from "react";
 import { motion } from "framer-motion";
 
@@ -53,13 +53,13 @@ const EventTab = ({ events }: { events: EventDTO[] }) => {
             <button
               key={each.value}
               onClick={() => setActiveTab(each.value)}
-              className={`relative pb-3 text-lg font-medium transition-colors ${activeTab === each.value ? "text-red-600" : "text-gray-600 hover:text-gray-800"}`}
+              className={`relative pb-3 text-lg font-medium transition-colors ${activeTab === each.value ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
             >
               {each.label}
               {activeTab === each.value && (
                 <motion.span
                   layoutId="tab-underline"
-                  className="absolute left-0 right-0 bottom-0 h-[3px] bg-red-600"
+                  className="absolute left-0 right-0 bottom-0 h-[3px] bg-primary"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
@@ -70,7 +70,7 @@ const EventTab = ({ events }: { events: EventDTO[] }) => {
       <div className="cards-wrapper grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-15 lg:px-15">
         {filteredEvents.length > 0 ? (
           filteredEvents.map((event: EventDTO) => (
-            <EventCard key={event._id} event={event} />
+            <EventCard key={event._id.toString()} event={event} />
           ))
         ) : (
           <p className="col-span-full text-center text-gray-500">

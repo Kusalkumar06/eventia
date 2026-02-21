@@ -1,18 +1,12 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
-import { Geist, Geist_Mono } from "next/font/google";
-import {Providers} from "./providers"
+import {
+  fontHeading,
+  fontSubheading,
+  fontParagraphStack,
+} from "@/utilities/fonts";
+import { Providers } from "./providers";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -27,9 +21,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${fontHeading.variable} ${fontSubheading.variable} antialiased`}
+        style={
+          { "--font-paragraph": fontParagraphStack } as React.CSSProperties
+        }
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem >
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Providers>{children}</Providers>
         </ThemeProvider>
       </body>
