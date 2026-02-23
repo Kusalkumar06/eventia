@@ -1,8 +1,14 @@
 "use client";
+import { useState } from "react";
 import { EventDTO } from "@/types/types";
-import { MapPin, User, Calendar, Globe, Check, X } from "lucide-react";
+import { MapPin, User, Calendar, Globe, Check, X, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import {
+  publishEventAction,
+  rejectEventAction,
+} from "@/utilities/services/eventActions";
 
 const formatEventDate = (start: string | Date, end: string | Date): string => {
   const startDate = new Date(start);
@@ -32,13 +38,26 @@ const PendingCard = ({ event }: { event: EventDTO }) => {
   const { title, slug, category, mode, startDate, endDate, status, organizer } =
     event;
 
-  const router = useRouter();
-  const handlePublish = async () => {
-    await fetch(`/api/events/${event._id}/publish`, {
-      method: "POST",
-    });
+  const [isLoading, setIsLoading] = useState(false);
 
-    router.refresh();
+  const [, startTransition] = useTransition();
+
+  const handlePublish = async () => {
+    setIsLoading(true);
+    startTransition(async () => {
+      try {
+        const res = await publishEventAction(event._id);
+        if (!res.success)
+          throw new Error(res.error || "Failed strictly to publish event");
+        toast.success("Event successfully published!");
+      } catch (error: unknown) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to publish event.",
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    });
   };
 
   const handleReject = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -46,13 +65,21 @@ const PendingCard = ({ event }: { event: EventDTO }) => {
     const reason = prompt("Enter rejection reason:");
     if (!reason) return;
 
-    await fetch(`/api/events/${event._id}/reject`, {
-      method: "POST",
-      body: JSON.stringify({ reason }),
-      headers: { "Content-Type": "application/json" },
+    setIsLoading(true);
+    startTransition(async () => {
+      try {
+        const res = await rejectEventAction(event._id, reason);
+        if (!res.success)
+          throw new Error(res.error || "Failed strictly to reject event");
+        toast.success("Event successfully rejected!");
+      } catch (error: unknown) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to reject event.",
+        );
+      } finally {
+        setIsLoading(false);
+      }
     });
-
-    router.refresh();
   };
 
   return (
@@ -98,21 +125,31 @@ const PendingCard = ({ event }: { event: EventDTO }) => {
         <div className="grid grid-cols-[repeat(5,1fr)] grid-rows-[repeat(1,1fr)] gap-2">
           <Link
             href={`/events/${slug}`}
-            className="row-start-1 row-end-2 col-start-1 col-end-4 bg-primary/10 text-primary text-center rounded-lg py-1 text-xs md:text-[16px] hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+            className="cursor-pointer row-start-1 row-end-2 col-start-1 col-end-4 bg-primary/10 text-primary text-center rounded-lg py-1 text-xs md:text-[16px] hover:bg-primary hover:text-primary-foreground transition-all duration-300"
           >
             View Details
           </Link>
           <button
             onClick={handlePublish}
-            className="row-start-1 row-end-2 col-start-4 col-end-5 border bg-background text-center text-green-500 rounded-lg py-1 flex justify-center items-center"
+            disabled={isLoading}
+            className="cursor-pointer row-start-1 row-end-2 col-start-4 col-end-5 border bg-background text-center text-green-500 rounded-lg py-1 flex justify-center items-center hover:bg-green-50 disabled:opacity-50 transition-colors"
           >
-            <Check className="h-3 w-3 md:h-4 md:w-4" />
+            {isLoading ? (
+              <Loader2 className="h-3 w-3 md:h-4 md:w-4 animate-spin" />
+            ) : (
+              <Check className="h-3 w-3 md:h-4 md:w-4" />
+            )}
           </button>
           <button
             onClick={handleReject}
-            className="row-start-1 row-end-2 col-start-5 col-end-6 border bg-background text-center text-red-600 rounded-lg py-1 flex justify-center items-center"
+            disabled={isLoading}
+            className="cursor-pointer row-start-1 row-end-2 col-start-5 col-end-6 border bg-background text-center text-red-600 rounded-lg py-1 flex justify-center items-center hover:bg-red-50 disabled:opacity-50 transition-colors"
           >
-            <X className="h-3 w-3 md:h-4 md:w-4" />
+            {isLoading ? (
+              <Loader2 className="h-3 w-3 md:h-4 md:w-4 animate-spin" />
+            ) : (
+              <X className="h-3 w-3 md:h-4 md:w-4" />
+            )}
           </button>
         </div>
       </footer>

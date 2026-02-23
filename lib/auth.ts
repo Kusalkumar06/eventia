@@ -43,16 +43,14 @@ export const authOptions: NextAuthOptions= {
           throw new Error("User not found. Please register.");
         }
 
-        if (user.provider !== "credentials") {
-          throw new Error("Please sign in using Google.");
-        }
+
 
         if (!user.emailVerified) {
           throw new Error("Please verify your email first.");
         }
 
         if (!user.password) {
-          throw new Error("Invalid login method.");
+          throw new Error("Invalid login method. Please sign in using Google or set a password in your profile.");
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -114,7 +112,7 @@ export const authOptions: NextAuthOptions= {
         }
 
         return token;
-      } catch (error) { 
+      } catch (error: unknown) { 
         console.error("Error in JWT callback:", error);
         return token;
       }

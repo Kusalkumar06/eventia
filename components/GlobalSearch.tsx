@@ -44,7 +44,7 @@ export default function GlobalSearch() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
 
-       if (debounceRef.current) {
+      if (debounceRef.current) {
         clearTimeout(debounceRef.current);
       }
 
@@ -128,7 +128,7 @@ export default function GlobalSearch() {
     <div ref={searchContainerRef} className="relative flex items-center">
       <button
         onClick={() => setShowMobileSearch(true)}
-        className="md:hidden p-2 text-zinc-600 dark:text-zinc-300 hover:text-primary"
+        className="cursor-pointer md:hidden p-2 text-zinc-600 dark:text-zinc-300 hover:text-primary"
       >
         <SearchIcon className="h-5 w-5" />
       </button>
@@ -149,7 +149,7 @@ export default function GlobalSearch() {
           )}
           <button
             onClick={clearSearch}
-            className="ml-2 p-2 text-sm text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+            className="cursor-pointer ml-2 p-2 text-sm text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
           >
             Cancel
           </button>

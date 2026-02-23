@@ -47,7 +47,7 @@ const FilterComponent = ({
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => updateUrl("category", "all")}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === "all" ? "bg-primary text-white" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"}`}
+            className={`cursor-pointer px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === "all" ? "bg-primary text-white" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"}`}
           >
             All Categories
           </button>
@@ -56,7 +56,7 @@ const FilterComponent = ({
             <button
               key={cat._id}
               onClick={() => updateUrl("category", cat.slug)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === cat.slug ? "bg-primary text-white" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"}`}
+              className={`cursor-pointer px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === cat.slug ? "bg-primary text-white" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"}`}
             >
               {cat.name}
             </button>

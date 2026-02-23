@@ -1,5 +1,5 @@
 import { EventDTO } from "@/types/types";
-import { getPendingEvents } from "@/utilities/services/eventActions";
+import { getPendingEvents } from "@/utilities/server/eventActions";
 import PendingCard from "@/components/admin/PendingCard";
 
 const AdminPage = async () => {

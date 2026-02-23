@@ -16,7 +16,7 @@ export async function proxy(req : NextRequest){
     return NextResponse.redirect(new URL("/", req.url));
   }
 
-  if (token && publicRoutes.includes(req.nextUrl.pathname)){
+  if (token && req.nextUrl.pathname === '/signin') {
     const homeUrl = new URL('/',req.url);
     return NextResponse.redirect(homeUrl);
   }
@@ -25,5 +25,5 @@ export async function proxy(req : NextRequest){
 }
 
 export const config = {
-  matcher: ['/create','/my-events','/profile','/admin/:path*','/create-event']
+  matcher: ['/create','/my-events','/profile','/admin/:path*','/create-event','/contact','/signin']
 }

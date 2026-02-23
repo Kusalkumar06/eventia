@@ -1,4 +1,4 @@
-import { NextRequest,NextResponse } from "next/server";
+﻿import { NextRequest,NextResponse } from "next/server";
 import { connectDb } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-guards";
 import { EventModel } from "@/models/event.model";

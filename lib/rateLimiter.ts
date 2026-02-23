@@ -5,8 +5,8 @@ let redis: Redis | undefined;
 
 try {
   redis = Redis.fromEnv();
-} catch(error) {
-  console.warn("Redis not configured. Rate limiting is disabled.");
+} catch (error: unknown) {
+  console.warn("Redis not configured. Rate limiting is disabled.", error);
 }
 
 const createLimiter = (limiter: ConstructorParameters<typeof Ratelimit>[0]["limiter"]) => {

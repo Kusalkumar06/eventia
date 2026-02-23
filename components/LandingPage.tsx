@@ -1,5 +1,3 @@
-"use client";
-
 import Hero from "@/components/landing/Hero";
 import LiveEvents from "@/components/landing/LiveEvents";
 import Categories from "@/components/landing/Categories";

@@ -26,7 +26,7 @@ export interface IEvent extends Document {
   startDate: Date;
   endDate: Date;
 
-  status: "draft" | "published" | "rejected" | "cancelled" | "completed";
+  status: "draft" | "published" | "rejected" | "cancelled";
   rejectionReason?: string | null;
 
   organizer: mongoose.Types.ObjectId;
@@ -117,7 +117,7 @@ const eventSchema = new Schema<IEvent>(
 
     status: {
       type: String,
-      enum: ["draft", "published", "completed", "cancelled","rejected"],
+      enum: ["draft", "published", "cancelled","rejected"],
       default: "draft",
       index: true,
     },

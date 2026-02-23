@@ -1,18 +1,30 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { signOut } from "next-auth/react";
-import React, { useState } from "react";
+import { signOut, useSession } from "next-auth/react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { lobster } from "@/utilities/fonts";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
 import { Menu, X } from "lucide-react";
 import GlobalSearch from "@/components/GlobalSearch";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (
+      status === "authenticated" &&
+      sessionStorage.getItem("googleLogin") === "pending"
+    ) {
+      toast.success("Successfully signed in!");
+      sessionStorage.removeItem("googleLogin");
+    }
+  }, [status]);
 
   interface NavLink {
     label: string;
@@ -22,8 +34,14 @@ const Navbar = () => {
   const links: NavLink[] = [
     { label: "Home", value: "/" },
     { label: "Events", value: "/events" },
-    { label: "My Events", value: "/my-events" },
-    { label: "Profile", value: "/profile" },
+
+    ...(session
+      ? [
+          { label: "My Events", value: "/my-events" },
+          { label: "Profile", value: "/profile" },
+        ]
+      : []),
+    { label: "Contact Us", value: "/contact" },
   ];
 
   const navContainerStyles =
@@ -82,18 +100,32 @@ const Navbar = () => {
           {/* Right Side: Actions */}
           <div className="hidden md:flex items-center gap-4">
             <ThemeToggle />
-            <Link
-              href="/create-event"
-              className="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-full font-medium transition-colors text-sm whitespace-nowrap"
-            >
-              + Create Event
-            </Link>
-            <button
-              onClick={() => signOut({ callbackUrl: "/signin" })}
-              className="text-zinc-600 dark:text-zinc-300 hover:text-primary text-sm font-medium transition-colors whitespace-nowrap"
-            >
-              Sign out
-            </button>
+            {session ? (
+              <>
+                <Link
+                  href="/create-event"
+                  className="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-full font-medium transition-colors text-sm whitespace-nowrap"
+                >
+                  + Create Event
+                </Link>
+                <button
+                  onClick={() => {
+                    sessionStorage.setItem("authAction", "loggedOut");
+                    signOut({ callbackUrl: "/signin" });
+                  }}
+                  className="cursor-pointer text-zinc-600 dark:text-zinc-300 hover:text-primary text-sm font-medium transition-colors whitespace-nowrap"
+                >
+                  Sign out
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/signin"
+                className="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-full font-medium transition-colors text-sm whitespace-nowrap"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -105,7 +137,7 @@ const Navbar = () => {
             <ThemeToggle />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-zinc-600 dark:text-white"
+              className="cursor-pointer text-zinc-600 dark:text-white"
             >
               {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
@@ -137,22 +169,35 @@ const Navbar = () => {
                   </Link>
                 ))}
                 <hr className="border-zinc-200/50 dark:border-zinc-800/50" />
-                <Link
-                  href="/create-event"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="bg-primary text-white px-5 py-3 rounded-lg text-center font-medium"
-                >
-                  + Create Event
-                </Link>
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    signOut({ callbackUrl: "/signin" });
-                  }}
-                  className="text-zinc-600 dark:text-zinc-300 text-left font-medium py-2"
-                >
-                  Sign out
-                </button>
+                {session ? (
+                  <>
+                    <Link
+                      href="/create-event"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="bg-primary text-white px-5 py-3 rounded-lg text-center font-medium"
+                    >
+                      + Create Event
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        sessionStorage.setItem("authAction", "loggedOut");
+                        signOut({ callbackUrl: "/signin" });
+                      }}
+                      className="text-zinc-600 dark:text-zinc-300 text-left font-medium py-2"
+                    >
+                      Sign out
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/signin"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="bg-primary text-white px-5 py-3 rounded-lg text-center font-medium"
+                  >
+                    Sign In
+                  </Link>
+                )}
               </div>
             </motion.div>
           )}

@@ -1,5 +1,5 @@
 import { EventDTO } from "@/types/types";
-import { getPublishedEvents } from "@/utilities/services/eventActions";
+import { getPublishedEvents } from "@/utilities/server/eventActions";
 import PublishCard from "@/components/admin/PublishCard";
 
 const PublishedPage = async () => {

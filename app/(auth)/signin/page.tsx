@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Mail, Lock, User, Eye, EyeOff, CheckCircle } from "lucide-react";
-import { getSession } from "next-auth/react";
+import Link from "next/link";
+import { toast } from "sonner";
 
 export default function AuthPage() {
   const router = useRouter();
@@ -13,21 +14,23 @@ export default function AuthPage() {
 
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
-  const [signInError, setSignInError] = useState("");
 
   const [signUpName, setSignUpName] = useState("");
   const [signUpEmail, setSignUpEmail] = useState("");
   const [signUpPassword, setSignUpPassword] = useState("");
-  const [signUpError, setSignUpError] = useState("");
   const [showOtpPanel, setShowOtpPanel] = useState(false);
 
   const [otp, setOtp] = useState("");
-  const [otpError, setOtpError] = useState("");
-  const [otpMessage, setOtpMessage] = useState("");
+
+  useEffect(() => {
+    if (sessionStorage.getItem("authAction") === "loggedOut") {
+      toast.success("Successfully signed out!");
+      sessionStorage.removeItem("authAction");
+    }
+  }, []);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSignInError("");
 
     const res = await signIn("credentials", {
       email: signInEmail,
@@ -36,23 +39,15 @@ export default function AuthPage() {
     });
 
     if (res?.error) {
-      setSignInError(res.error);
+      toast.error(res.error);
     } else {
-      const session = await getSession();
-
-      if (session?.user.role === "admin") {
-        router.push("/admin");
-      } else {
-        router.push("/");
-      }
+      toast.success("Successfully signed in!");
+      router.push("/");
     }
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSignUpError("");
-    setOtpError("");
-    setOtpMessage("");
 
     try {
       const res = await fetch("/api/auth/register", {
@@ -66,19 +61,21 @@ export default function AuthPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setSignUpError(data.error || "Registration failed");
+        toast.error(data.error || "Registration failed");
       } else {
+        toast.success(
+          "Registration successful! Please check your email for the OTP.",
+        );
         setShowOtpPanel(true);
       }
-    } catch {
-      setSignUpError("An unexpected error occurred.");
+    } catch (error: unknown) {
+      console.error("Signup error:", error);
+      toast.error("An unexpected error occurred.");
     }
   };
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setOtpError("");
-    setOtpMessage("");
 
     try {
       const res = await fetch("/api/auth/verify-otp", {
@@ -88,16 +85,16 @@ export default function AuthPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setOtpError(data.error || "Verification failed");
+        toast.error(data.error || "Verification failed");
       } else {
-        setOtpMessage("Verified! Signing you in...");
+        toast.success("Verified! Signing you in...");
         const loginRes = await signIn("credentials", {
           email: signUpEmail,
           password: signUpPassword,
           redirect: false,
         });
         if (loginRes?.error) {
-          setOtpError(
+          toast.error(
             "Verified but failed to auto-login. Please sign in manually.",
           );
           setTimeout(() => {
@@ -108,8 +105,9 @@ export default function AuthPage() {
           router.push("/");
         }
       }
-    } catch {
-      setOtpError("An error occurred during verification.");
+    } catch (error: unknown) {
+      console.error("OTP verification error:", error);
+      toast.error("An error occurred during verification.");
     }
   };
 
@@ -139,9 +137,10 @@ export default function AuthPage() {
               <div className="social-container flex gap-4 my-4">
                 <button
                   type="button"
-                  onClick={() =>
-                    signIn("google", { callbackUrl: "/post-login" })
-                  }
+                  onClick={() => {
+                    sessionStorage.setItem("googleLogin", "pending");
+                    signIn("google", { callbackUrl: "/" });
+                  }}
                   className="border border-border rounded-full w-10 h-10 flex items-center justify-center text-foreground hover:bg-muted transition"
                 >
                   <svg
@@ -209,10 +208,6 @@ export default function AuthPage() {
                 </button>
               </div>
 
-              {signUpError && (
-                <p className="text-red-500 text-xs mt-2">{signUpError}</p>
-              )}
-
               <button className="mt-4 rounded-full border border-primary bg-primary text-white text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 hover:shadow-lg focus:outline-none">
                 Sign Up
               </button>
@@ -246,13 +241,6 @@ export default function AuthPage() {
                 />
               </div>
 
-              {otpError && (
-                <p className="text-red-500 text-xs mt-2">{otpError}</p>
-              )}
-              {otpMessage && (
-                <p className="text-green-500 text-xs mt-2">{otpMessage}</p>
-              )}
-
               <button className="mt-4 rounded-full border border-primary bg-primary text-white text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 hover:shadow-lg focus:outline-none">
                 Verify & Login
               </button>
@@ -281,7 +269,10 @@ export default function AuthPage() {
             <div className="social-container flex gap-4 my-4">
               <button
                 type="button"
-                onClick={() => signIn("google", { callbackUrl: "/post-login" })}
+                onClick={() => {
+                  sessionStorage.setItem("googleLogin", "pending");
+                  signIn("google", { callbackUrl: "/" });
+                }}
                 className="border border-border rounded-full w-10 h-10 flex items-center justify-center text-foreground hover:bg-muted transition"
               >
                 <svg
@@ -334,16 +325,12 @@ export default function AuthPage() {
               </button>
             </div>
 
-            <a
-              href="#"
+            <Link
+              href="/forgot-password"
               className="text-muted-foreground text-xs no-underline my-2 hover:underline transition-colors"
             >
               Forgot your password?
-            </a>
-
-            {signInError && (
-              <p className="text-red-500 text-xs mt-2">{signInError}</p>
-            )}
+            </Link>
 
             <button className="mt-4 rounded-full border border-primary bg-primary text-white text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 hover:shadow-lg focus:outline-none">
               Sign In
@@ -385,7 +372,7 @@ export default function AuthPage() {
               <h1 className="font-bold text-3xl mb-4">Hello, Friend!</h1>
               <p className="text-sm font-light leading-6 mb-8 opacity-90">
                 Enter your personal details and start your journey with us
-              </p>  
+              </p>
               <button
                 className="ghost rounded-full border border-current bg-transparent text-current text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 focus:outline-none 0 "
                 onClick={() => setIsRightPanelActive(true)}

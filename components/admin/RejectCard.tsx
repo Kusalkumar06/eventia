@@ -37,7 +37,7 @@ const RejectCard = ({ event }: { event: EventDTO }) => {
           <p className="text-primary text-xs md:text-[15px] font-bold">
             {category.name}
           </p>
-          <button className="text-xs px-4 py-1 bg-muted text-muted-foreground rounded-md ">
+          <button className="cursor-pointer text-xs px-4 py-1 bg-muted text-muted-foreground rounded-md ">
             {status}
           </button>
         </div>
@@ -73,7 +73,7 @@ const RejectCard = ({ event }: { event: EventDTO }) => {
         <div className="flex justify-center">
           <Link
             href={`/events/${slug}`}
-            className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 text-center rounded-lg px-10 py-1 text-xs md:text-[15px] font-medium"
+            className="cursor-pointer bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 text-center rounded-lg px-10 py-1 text-xs md:text-[15px] font-medium"
           >
             View Details
           </Link>

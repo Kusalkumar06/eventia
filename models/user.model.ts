@@ -6,6 +6,7 @@ export interface IUser extends Document {
   email:string;
   password:string|null;
   image:string|null;
+  bio:string;
   role: "user" | "admin";
   provider: "credentials" | "google" ;
   emailVerified:boolean;
@@ -26,6 +27,11 @@ const userSchema = new Schema<IUser>(
       unique: true,
       lowercase:true,
       index: true,
+    },
+    bio:{
+      type: String,
+      trim: true,
+      default: "",
     },
     password:{
       type: String,

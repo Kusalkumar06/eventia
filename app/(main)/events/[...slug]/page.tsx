@@ -10,8 +10,12 @@ import {
   User,
   Tag,
 } from "lucide-react";
-import { getEventsBySlug } from "@/utilities/services/eventActions";
+import { getEventsBySlug } from "@/utilities/server/eventActions";
 import RegisterButton from "@/components/RegisterButton";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { RegistrationModel } from "@/models/registration.model";
+import { connectDb } from "@/lib/db";
 
 const EventDetailsPage = async (props: {
   params: Promise<{ slug: string[] }>;
@@ -20,6 +24,19 @@ const EventDetailsPage = async (props: {
   const slug = params.slug;
   const eventSlug = Array.isArray(slug) ? slug[slug.length - 1] : slug;
   const event = await getEventsBySlug(eventSlug);
+
+  let initialIsRegistered = false;
+  if (event) {
+    const session = await getServerSession(authOptions);
+    if (session?.user?.id && event.isRegistrationRequired) {
+      await connectDb();
+      const existingRegistration = await RegistrationModel.findOne({
+        user: session.user.id,
+        event: event._id,
+      });
+      initialIsRegistered = !!existingRegistration;
+    }
+  }
 
   if (!event) {
     return (
@@ -117,7 +134,17 @@ const EventDetailsPage = async (props: {
             </div>
           </div>
 
-          {location && (
+          {event.mode === "online" ? (
+            <div className="bg-card border border-border p-6 rounded-xl shadow-sm space-y-4">
+              <div className="flex items-center gap-2 text-foreground font-semibold">
+                <MapPin className="w-5 h-5" />
+                <span>Location</span>
+              </div>
+              <div>
+                <p className="text-xl font-bold mb-1">Online Event</p>
+              </div>
+            </div>
+          ) : location ? (
             <div className="bg-card border border-border p-6 rounded-xl shadow-sm space-y-4">
               <div className="flex items-center gap-2 text-foreground font-semibold">
                 <MapPin className="w-5 h-5" />
@@ -133,7 +160,7 @@ const EventDetailsPage = async (props: {
                 </p>
               </div>
             </div>
-          )}
+          ) : null}
 
           <section className="bg-card border border-border p-6 rounded-xl shadow-sm space-y-4">
             <h2 className="text-xl font-bold text-foreground">
@@ -202,6 +229,7 @@ const EventDetailsPage = async (props: {
                 isRegistrationRequired={event.isRegistrationRequired}
                 maxRegistrations={maxRegistrations}
                 registrationsCount={registrationsCount}
+                initialIsRegistered={initialIsRegistered}
               />
             </div>
           </div>

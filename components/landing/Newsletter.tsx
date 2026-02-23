@@ -42,7 +42,7 @@ export default function Newsletter() {
           <button
             type="submit"
             disabled={subscribed}
-            className="absolute right-2 top-2 bottom-2 bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors disabled:bg-green-600"
+            className="cursor-pointer absolute right-2 top-2 bottom-2 bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors disabled:bg-green-600"
           >
             {subscribed ? (
               <Check className="w-5 h-5" />

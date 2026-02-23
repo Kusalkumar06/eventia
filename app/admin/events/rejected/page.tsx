@@ -1,5 +1,5 @@
 import { EventDTO } from "@/types/types";
-import { getRejectedEvents } from "@/utilities/services/eventActions";
+import { getRejectedEvents } from "@/utilities/server/eventActions";
 import RejectCard from "@/components/admin/RejectCard";
 const RejectedPage = async () => {
   const events = await getRejectedEvents();

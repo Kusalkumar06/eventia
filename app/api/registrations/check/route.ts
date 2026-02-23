@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ registered: !!isExists }, { status: 200 });
     
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof Error && error.message === "Unauthorized") {
       return NextResponse.json({ registered: false, message: "Unauthenticated" }, { status: 401 });
     }

@@ -7,6 +7,7 @@ import {
 } from "@/utilities/fonts";
 import { Providers } from "./providers";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -28,6 +29,7 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Providers>{children}</Providers>
+          <Toaster position="bottom-center" richColors />
         </ThemeProvider>
       </body>
     </html>

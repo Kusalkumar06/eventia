@@ -1,7 +1,7 @@
-import FilterComponent from "@/components/FilterComponent";
-import EventTab from "@/components/EventTab";
+import FilterComponent from "@/components/events/FilterComponent";
+import EventTab from "@/components/events/EventTab";
 
-import { getEvents } from "@/utilities/services/eventActions";
+import { getEvents } from "@/utilities/server/eventActions";
 
 type HomeProps = {
   searchParams: Promise<{

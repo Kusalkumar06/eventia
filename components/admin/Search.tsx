@@ -122,7 +122,7 @@ export default function Search() {
     <div ref={searchContainerRef} className="relative">
       <button
         onClick={() => setShowMobileSearch(true)}
-        className="md:hidden p-2 text-muted-foreground hover:text-foreground"
+        className="cursor-pointer md:hidden p-2 text-muted-foreground hover:text-foreground"
       >
         <SearchIcon className="h-5 w-5" />
       </button>
@@ -143,7 +143,7 @@ export default function Search() {
           )}
           <button
             onClick={clearSearch}
-            className="ml-2 p-2 text-sm text-muted-foreground hover:text-foreground"
+            className="cursor-pointer ml-2 p-2 text-sm text-muted-foreground hover:text-foreground"
           >
             Cancel
           </button>

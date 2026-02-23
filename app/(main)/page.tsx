@@ -1,6 +1,6 @@
 import LandingPage from "@/components/LandingPage";
 
-const Home = () => {
+const Home = async () => {
   return <LandingPage />;
 };
 

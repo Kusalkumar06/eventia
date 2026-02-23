@@ -32,7 +32,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const existingOtp = await Otp.findOne({ email, purpose });
+    // Sort by createdAt: -1 to get the most recent OTP in case of race conditions
+    const existingOtp = await Otp.findOne({ email, purpose }).sort({ createdAt: -1 });
     console.log(existingOtp);
 
     if(!existingOtp){
@@ -41,6 +42,12 @@ export async function POST(req: NextRequest) {
 
     if (existingOtp.expiresAt < new Date()) {
       return NextResponse.json({ error: "OTP expired" }, { status: 400 });
+    }
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     if (purpose === "verify") {

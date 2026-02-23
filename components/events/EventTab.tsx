@@ -5,7 +5,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 
 const EventTab = ({ events }: { events: EventDTO[] }) => {
-  const [activeTab, setActiveTab] = useState<string>("recent");
+  const [activeTab, setActiveTab] = useState<string>("upcoming");
 
   const tabs: { label: string; value: string }[] = [
     {

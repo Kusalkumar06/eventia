@@ -16,6 +16,7 @@ import {
   CalendarCheck2,
 } from "lucide-react";
 import { lobster } from "@/utilities/fonts";
+import { signOut } from "next-auth/react";
 
 const sidebarItems = [
   {
@@ -92,7 +93,7 @@ const SideBar = (props: SideBarProps) => {
 
         <button
           onClick={() => setMobileSidebar(false)}
-          className="lg:hidden p-1 rounded-md hover:bg-sidebar-accent text-sidebar-foreground"
+          className="cursor-pointer lg:hidden p-1 rounded-md hover:bg-sidebar-accent text-sidebar-foreground"
         >
           <ChevronLeft size={20} />
         </button>
@@ -100,7 +101,7 @@ const SideBar = (props: SideBarProps) => {
         {desktopSidebar && (
           <button
             onClick={() => setDesktopSidebar(false)}
-            className="hidden lg:block p-1 rounded-md hover:bg-sidebar-accent text-sidebar-foreground"
+            className="cursor-pointer hidden lg:block p-1 rounded-md hover:bg-sidebar-accent text-sidebar-foreground"
           >
             <ChevronLeft size={20} />
           </button>
@@ -141,7 +142,7 @@ const SideBar = (props: SideBarProps) => {
                         href={sub.href}
                         onClick={() => setMobileSidebar(false)}
                         className={cn(
-                          "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ml-4",
+                          "cursor-pointer flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ml-4",
                           isActive
                             ? "bg-sidebar-primary text-sidebar-primary-foreground font-medium"
                             : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
@@ -166,7 +167,7 @@ const SideBar = (props: SideBarProps) => {
                 href={item.href}
                 onClick={() => setMobileSidebar(false)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-md transition-colors group relative",
+                  "cursor-pointer flex items-center gap-3 px-3 py-2 rounded-md transition-colors group relative",
                   pathname === item.href
                     ? "bg-sidebar-primary text-sidebar-primary-foreground font-medium"
                     : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
@@ -191,8 +192,12 @@ const SideBar = (props: SideBarProps) => {
 
       <div className="p-4 border-t border-sidebar-border">
         <button
+          onClick={() => {
+            sessionStorage.setItem("authAction", "loggedOut");
+            signOut({ callbackUrl: "/signin" });
+          }}
           className={cn(
-            "flex items-center gap-3 w-full px-3 py-2 text-destructive hover:bg-red-100/10 rounded-md transition-colors",
+            "cursor-pointer flex items-center gap-3 w-full px-3 py-2 text-destructive hover:bg-red-100/10 rounded-md transition-colors",
             !desktopSidebar && "lg:justify-center",
           )}
         >
@@ -206,7 +211,7 @@ const SideBar = (props: SideBarProps) => {
       {!desktopSidebar && (
         <button
           onClick={() => setDesktopSidebar(true)}
-          className="hidden lg:flex absolute -right-3 top-20 bg-card border border-border p-1 rounded-full shadow-md z-50 text-foreground"
+          className="cursor-pointer hidden lg:flex absolute -right-3 top-20 bg-card border border-border p-1 rounded-full shadow-md z-50 text-foreground"
         >
           <ChevronRight size={14} />
         </button>

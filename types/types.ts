@@ -31,7 +31,8 @@ export type EventDTO = {
   startDate: string;   
   endDate: string;     
 
-  status: "draft" | "published" | "cancelled" | "completed" | "rejected";
+  status: "draft" | "published" | "cancelled" | "rejected";
+  rejectionReason?: string;
 
   organizer: {
     _id: string
@@ -46,3 +47,4 @@ export type EventDTO = {
   createdAt: string;    
   updatedAt: string;   
 };
+
