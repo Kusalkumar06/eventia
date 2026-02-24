@@ -83,48 +83,44 @@ export const authOptions: NextAuthOptions= {
           return false; 
         }
         
-        const existingUser = await UserModel.findOne({ email: user.email });
+        let dbUser = await UserModel.findOne({ email: user.email });
 
-        if (!existingUser) {
-          await UserModel.create({
+        if (!dbUser) {
+          dbUser = await UserModel.create({
             name: user.name ?? user.email.split("@")[0],
             email: user.email,
             provider: "google",
-            emailVerified: true, 
+            emailVerified: true,
           });
         }
-
-        return true;
+        if (!dbUser) return false;
+        user.id = dbUser._id.toString();
+        user.role = dbUser.role;
       }
-
       return true;
     },
-    async jwt({ token }) {
+    async jwt({ token, user }) {
       try {
-        if (!token.email) return token;
-
-        await connectDb();
-        const dbUser = await UserModel.findOne({ email: token.email });
-
-        if (dbUser) {
-          token.id = dbUser._id.toString();
-          token.role = dbUser.role;
+        // When user logs in first time
+        if (user) {
+          token.id = (user).id;
+          token.role = (user).role;
+          token.email = user.email;
         }
-
         return token;
-      } catch (error: unknown) { 
-        console.error("Error in JWT callback:", error);
+      } catch (error) {
+        console.error("JWT callback error:", error);
         return token;
       }
     },
-    async session({session,token}){
+    async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
-        session.user.role = token.role;
+        session.user.role = token.role as "user" | "admin";
       }
       return session;
-    }
+    },
   },
   secret: process.env.NEXTAUTH_SECRET,
 }
