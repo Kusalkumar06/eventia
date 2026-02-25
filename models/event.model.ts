@@ -50,9 +50,7 @@ const eventSchema = new Schema<IEvent>(
     slug: {
       type: String,
       required: true,
-      unique: true,
       lowercase: true,
-      index: true,
     },
 
     description: {
@@ -69,7 +67,6 @@ const eventSchema = new Schema<IEvent>(
       type: Schema.Types.ObjectId,
       ref: "Category",
       required: true,
-      index: true,
     },
 
     otherCategoryLabel: {
@@ -119,7 +116,6 @@ const eventSchema = new Schema<IEvent>(
       type: String,
       enum: ["draft", "published", "cancelled","rejected"],
       default: "draft",
-      index: true,
     },
 
     rejectionReason: {
@@ -131,7 +127,6 @@ const eventSchema = new Schema<IEvent>(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      index: true,
     },
 
     isRegistrationRequired: {

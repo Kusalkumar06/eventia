@@ -1,8 +1,7 @@
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
-
+import Hero from "@/components/landing/Hero";
 // Dynamically import heavy landing components
-const Hero = dynamic(() => import("@/components/landing/Hero"), { ssr: true });
 const LiveEvents = dynamic(() => import("@/components/landing/LiveEvents"), {
   ssr: true,
 });
@@ -41,7 +40,7 @@ export default function LandingPage() {
         <Hero />
       </Suspense>
 
-      <div className="max-w-7xl mx-auto space-y-24 py-24">
+      <div className="mx-auto space-y-24 py-24">
         <Suspense fallback={<SectionSkeleton />}>
           <LiveEvents />
         </Suspense>

@@ -40,7 +40,7 @@ export default function EventImage({
         sizes={sizes}
         priority={priority}
         quality={quality}
-        onLoadingComplete={() => setIsLoading(false)}
+        onLoad={() => setIsLoading(false)}
         onError={() => setImgSrc(fallbackSrc)}
         className={cn(
           "object-cover transition-all duration-300",

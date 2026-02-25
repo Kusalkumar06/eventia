@@ -112,7 +112,7 @@ type EventFilter = {
   category?: mongoose.Types.ObjectId;
 };
 
-export const getEvents = (searchParams: { search?: string; category?: string; limit?: number } = {}) => {
+export const getEvents = async(searchParams: { search?: string; category?: string; limit?: number } = {}) => {
   const { search, category: categorySlug, limit } = searchParams;
   
   return unstable_cache(
@@ -160,7 +160,7 @@ export const getEvents = (searchParams: { search?: string; category?: string; li
   )();
 };
 
-export const getEventsBySlug = (slug: string) => {
+export const  getEventsBySlug = async (slug: string) => {
   return unstable_cache(
     async (): Promise<EventDTO | null> => {
       await connectDb();
