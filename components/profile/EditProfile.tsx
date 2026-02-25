@@ -51,7 +51,7 @@ export default function EditProfile({
 
         setIsOpen(false);
         // router.refresh(); Server actions handle revalidation
-      } catch (err: any) {
+      } catch (err : unknown) {
         setError(
           err instanceof Error ? err.message : "An unexpected error occurred",
         );

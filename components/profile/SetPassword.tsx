@@ -40,7 +40,7 @@ export default function SetPassword() {
           setNewPassword("");
           setConfirmPassword("");
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         toast.error("An unexpected error occurred.");
       } finally {
         setIsLoading(false);

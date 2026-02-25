@@ -110,11 +110,13 @@ ${onlineUrlStr}
       `;
 
       try {
-        await sendEmail({
-          to: session.user.email,
-          subject: `Registration Confirmed: ${updatedEvent.title}`,
-          htmlContent,
-        });
+        if (session.user.email) {
+          await sendEmail({
+            to: session.user.email,
+            subject: `Registration Confirmed: ${updatedEvent.title}`,
+            htmlContent,
+          });
+        }
       } catch (emailError) {
         console.error("Failed to send registration confirmation email", emailError);
       }

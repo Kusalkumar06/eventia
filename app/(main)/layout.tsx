@@ -1,25 +1,16 @@
-"use client";
-
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { usePathname } from "next/navigation";
+import MainContent from "@/components/layout/MainContent";
 
 export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-  const isHome = pathname === "/";
-
   return (
     <>
       <Navbar />
-      <main
-        className={`${isHome ? "pt-0" : "pt-20"} min-h-screen bg-background`}
-      >
-        {children}
-      </main>
+      <MainContent>{children}</MainContent>
       <Footer />
     </>
   );
