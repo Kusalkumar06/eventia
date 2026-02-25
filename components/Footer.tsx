@@ -1,8 +1,5 @@
-"use client";
-
 import { Facebook, Instagram, Twitter, Linkedin, Github } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 
 const socialLinks = [
   { icon: Twitter, href: "#" },
@@ -76,13 +73,9 @@ export default function Footer() {
         </div>
 
         <div className="pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-4 text-zinc-600 text-sm">
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
+          <p>
             &copy; {new Date().getFullYear()} Eventia Inc. All rights reserved.
-          </motion.p>
+          </p>
           <div className="flex gap-8">
             <Link href="#" className="hover:text-white transition-colors">
               Privacy Policy

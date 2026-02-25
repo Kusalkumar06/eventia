@@ -7,7 +7,7 @@ import { RegistrationModel } from "@/models/registration.model";
 import { logActivity } from "@/lib/logActivity";
 import { sendEmail } from "@/lib/brevo";
 import { format } from "date-fns";
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 
 export async function registerForEventAction(eventId: string) {
   try {
@@ -41,7 +41,7 @@ export async function registerForEventAction(eventId: string) {
         user: session.user.id,
       });
       
-      await logActivity({
+      logActivity({
         actorId: session.user.id,
         actorRole: session.user.role as "user" | "admin",
         action: "EVENT_REGISTERED",
@@ -50,7 +50,6 @@ export async function registerForEventAction(eventId: string) {
         message: `Registered for event: ${updatedEvent.title}`,
       });
 
-      // Format dates for Google Calendar
       const gcalStart = new Date(updatedEvent.startDate).toISOString().replace(/-|:|\.\d\d\d/g, "");
       const gcalEnd = new Date(updatedEvent.endDate).toISOString().replace(/-|:|\.\d\d\d/g, "");
       const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(updatedEvent.title)}&dates=${gcalStart}/${gcalEnd}&details=${encodeURIComponent(updatedEvent.shortDescription || "")}&location=${encodeURIComponent(updatedEvent.mode === "offline" && updatedEvent.location ? `${updatedEvent.location.venue}, ${updatedEvent.location.city}` : "Online")}`;
@@ -121,8 +120,9 @@ ${onlineUrlStr}
         console.error("Failed to send registration confirmation email", emailError);
       }
 
-      revalidatePath(`/events/${updatedEvent.slug}`);
-      revalidatePath("/my-events");
+      revalidateTag(`event-${updatedEvent.slug}`, "tag");
+      revalidateTag("events-list", "tag");
+      revalidateTag(`user-events-${session.user.id}`, "tag");
 
       return { success: true };
     } catch (error: unknown) {
@@ -179,7 +179,7 @@ export async function unregisterFromEventAction(eventId: string) {
           { $inc: { registrationsCount: -1 } }
         );
     
-        await logActivity({
+        logActivity({
           actorId: session.user.id,
           actorRole: session.user.role as "user" | "admin",
           action: "EVENT_UNREGISTERED",
@@ -227,8 +227,9 @@ export async function unregisterFromEventAction(eventId: string) {
           console.error("Failed to send unregistration confirmation email", emailError);
         }
     
-        revalidatePath(`/events/${event.slug}`);
-        revalidatePath("/my-events");
+        revalidateTag(`event-${event.slug}`, "tag");
+        revalidateTag("events-list", "tag");
+        revalidateTag(`user-events-${session.user.id}`, "tag");
 
         return { success: true };
     

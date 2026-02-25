@@ -1,3 +1,5 @@
+export const revalidate = 3600; // revalidate every 1 hour
+
 import React from "react";
 import Link from "next/link";
 import {
@@ -12,7 +14,7 @@ import {
 } from "lucide-react";
 import { getEventsBySlug } from "@/utilities/server/eventActions";
 import RegisterButton from "@/components/RegisterButton";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { RegistrationModel } from "@/models/registration.model";
 import { connectDb } from "@/lib/db";
@@ -23,19 +25,19 @@ const EventDetailsPage = async (props: {
   const params = await props.params;
   const slug = params.slug;
   const eventSlug = Array.isArray(slug) ? slug[slug.length - 1] : slug;
-  const event = await getEventsBySlug(eventSlug);
+  const [event, session] = await Promise.all([
+    getEventsBySlug(eventSlug),
+    getServerSession(authOptions),
+  ]);
 
   let initialIsRegistered = false;
-  if (event) {
-    const session = await getServerSession(authOptions);
-    if (session?.user?.id && event.isRegistrationRequired) {
-      await connectDb();
-      const existingRegistration = await RegistrationModel.findOne({
-        user: session.user.id,
-        event: event._id,
-      });
-      initialIsRegistered = !!existingRegistration;
-    }
+  if (event && session?.user?.id && event.isRegistrationRequired) {
+    await connectDb();
+    const existingRegistration = await RegistrationModel.findOne({
+      user: session.user.id,
+      event: event._id,
+    });
+    initialIsRegistered = !!existingRegistration;
   }
 
   if (!event) {
@@ -86,7 +88,7 @@ const EventDetailsPage = async (props: {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container mx-auto px-4 py-8 max-w-6xl pt-24">
       <Link
         href="/events"
         className="inline-flex items-center text-primary hover:underline mb-6 transition-colors"

@@ -8,7 +8,7 @@ import { EventDTO } from "@/types/types";
 import { logActivity } from "@/lib/logActivity";
 import mongoose from "mongoose";
 import slugify from "slugify";
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 
 type EventWithCategoryAndOrganizer = Omit<IEvent, "category" | "organizer"> & {
   category: {
@@ -187,7 +187,7 @@ export async function createEventAction(data: EventActionData) {
       slug,
     });
 
-    await logActivity({
+    logActivity({
       actorId: session.user.id,
       actorRole: session.user.role as "user" | "admin",
       action: "EVENT_CREATED",
@@ -196,7 +196,8 @@ export async function createEventAction(data: EventActionData) {
       message: `Created a new event: ${event.title}`,
     });
 
-    revalidatePath("/my-events");
+    revalidateTag("admin-events", "tag");
+    revalidateTag(`user-events-${session.user.id}`, "tag");
     
     // Return a serialized representation of the event
     return { success: true, eventId: event._id.toString() };
@@ -245,7 +246,7 @@ export async function updateEventAction(eventId: string, data: Partial<EventActi
     
         await event.save();
     
-        await logActivity({
+        logActivity({
           actorId: session.user.id,
           actorRole: session.user.role as "user" | "admin",
           action: "EVENT_UPDATED",
@@ -254,8 +255,13 @@ export async function updateEventAction(eventId: string, data: Partial<EventActi
           message: `Updated event "${event.title}"`,
         });
 
-        revalidatePath("/my-events");
-        revalidatePath(`/events/${event.slug}`);
+        revalidateTag("admin-events", "tag");
+        revalidateTag(`user-events-${session.user.id}`, "tag");
+        revalidateTag(`event-${event.slug}`, "tag");
+        // If it's already published, update lists too
+        if (event.status === "published") {
+          revalidateTag("events-list", "tag");
+        }
 
         return { success: true, eventId: event._id.toString() };
     } catch (error: unknown) {
@@ -288,7 +294,7 @@ export async function deleteEventAction(eventId: string) {
 
     await EventModel.findByIdAndDelete(eventId);
 
-    await logActivity({
+    logActivity({
         actorId: session.user.id,
         actorRole: session.user.role as "user" | "admin",
         action: "EVENT_DELETED",
@@ -297,7 +303,8 @@ export async function deleteEventAction(eventId: string) {
         message: `Deleted event "${event.title}"`,
     });
 
-    revalidatePath("/my-events");
+    revalidateTag("admin-events", "tag");
+    revalidateTag(`user-events-${session.user.id}`, "tag");
 
     return { success: true };
   } catch (error: unknown) {
@@ -331,7 +338,7 @@ export async function cancelEventAction(eventId: string) {
     event.status = "cancelled";
     await event.save();
 
-    await logActivity({
+    logActivity({
       actorId: session.user.id,
       actorRole: session.user.role as "user" | "admin",
       action: "EVENT_CANCELLED",
@@ -340,8 +347,10 @@ export async function cancelEventAction(eventId: string) {
       message: `Cancelled event: ${event.title}`,
     });
 
-    revalidatePath("/my-events");
-    revalidatePath(`/events/${event.slug}`);
+    revalidateTag("events-list", "tag");
+    revalidateTag(`event-${event.slug}`, "tag");
+    revalidateTag("admin-events", "tag");
+    revalidateTag(`user-events-${session.user.id}`, "tag");
 
     return { success: true };
   } catch (error: unknown) {
@@ -375,7 +384,7 @@ export async function publishEventAction(eventId: string) {
     event.rejectionReason = undefined; 
     await event.save();
 
-    await logActivity({
+    logActivity({
       actorId: session.user.id,
       actorRole: "admin",
       action: "EVENT_PUBLISHED",
@@ -384,9 +393,10 @@ export async function publishEventAction(eventId: string) {
       message: `Published event: ${event.title}`,
     });
 
-    revalidatePath("/admin/pending-events");
-    revalidatePath("/admin");
-    revalidatePath("/events"); 
+    revalidateTag("events-list", "tag");
+    revalidateTag("admin-events", "tag");
+    revalidateTag(`event-${event.slug}`, "tag");
+    revalidateTag(`user-events-${event.organizer.toString()}`, "tag");
     
     return { success: true };
   } catch (error: unknown) {
@@ -425,7 +435,7 @@ export async function rejectEventAction(eventId: string, reason: string) {
 
     await event.save();
 
-    await logActivity({
+    logActivity({
         actorId: session.user.id,
         actorRole: "admin",
         action: "EVENT_REJECTED",
@@ -434,9 +444,9 @@ export async function rejectEventAction(eventId: string, reason: string) {
         message: `Rejected event: ${event.title} - Reason: ${reason}`,
     });
 
-    revalidatePath("/admin/pending-events");
-    revalidatePath("/admin");
-    revalidatePath("/events"); 
+    revalidateTag("admin-events", "tag");
+    revalidateTag(`event-${event.slug}`, "tag");
+    revalidateTag(`user-events-${event.organizer.toString()}`, "tag");
 
     return { success: true };
   } catch (error: unknown) {

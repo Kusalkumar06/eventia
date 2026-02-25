@@ -1,8 +1,7 @@
 import { requireAuth } from "@/lib/auth-guards";
 import { notFound, redirect } from "next/navigation";
-import { connectDb } from "@/lib/db";
-import { CategoryModel } from "@/models/category.model";
 import { getEventsBySlug } from "@/utilities/server/eventActions";
+import { getCategories } from "@/utilities/server/categoryActions";
 import EventForm from "@/components/createEvent/EventForm";
 
 export const dynamic = "force-dynamic";
@@ -30,18 +29,8 @@ export default async function EditEventPage(props: {
     redirect("/my-events");
   }
 
-  await connectDb();
-
-  const categories = await CategoryModel.find({ isActive: true })
-    .select("_id name slug")
-    .sort({ name: 1 })
-    .lean();
-
-  const serializedCategories = categories.map((cat) => ({
-    _id: cat._id.toString(),
-    name: cat.name,
-    slug: cat.slug,
-  }));
+  // Fetch active categories using the cached server action
+  const categories = await getCategories();
 
   return (
     <div className="min-h-screen bg-muted/30 py-10 px-4 sm:px-6 lg:px-8">
@@ -57,7 +46,7 @@ export default async function EditEventPage(props: {
         </div>
 
         <div className="bg-card text-card-foreground rounded-2xl border border-border shadow-sm overflow-hidden p-6 sm:p-8">
-          <EventForm categories={serializedCategories} initialData={event} />
+          <EventForm categories={categories} initialData={event} />
         </div>
       </div>
     </div>

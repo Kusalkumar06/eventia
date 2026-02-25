@@ -3,17 +3,19 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import EventImage from "@/components/shared/EventImage";
 
 export default function OrganizerCTA() {
   return (
     <section className="relative py-32 overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <Image
+        <EventImage
           src="https://images.unsplash.com/photo-1505236858219-8359eb29e329?q=80&w=2162&auto=format&fit=crop"
           alt="Event Organizer"
           fill
-          className="object-cover object-center brightness-[0.2]"
+          sizes="100vw"
+          className="brightness-[0.2]"
+          containerClassName="h-full w-full"
         />
         <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-black" />
       </div>

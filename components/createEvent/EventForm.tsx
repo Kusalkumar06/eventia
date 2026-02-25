@@ -232,7 +232,7 @@ export default function EventForm({ categories, initialData }: EventFormProps) {
                 )}
               >
                 {/* Step Circle & Label Container */}
-                <div className="flex flex-col items-center flex-shrink-0 relative group min-w-[2rem]">
+                <div className="flex flex-col items-center shrink-0 relative group min-w-8">
                   <div
                     className={cn(
                       "flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full transition-all duration-500 ease-in-out z-10",
@@ -272,7 +272,7 @@ export default function EventForm({ categories, initialData }: EventFormProps) {
 
                 {/* Connector Line */}
                 {index !== STEPS.length - 1 && (
-                  <div className="flex-1 px-2 pb-0 pt-0 w-full relative h-[2px] -mt-[1px] md:-mt-[2px]">
+                  <div className="flex-1 px-2 pb-0 pt-0 w-full relative h-[2px] -mt-px md:-mt-[2px]">
                     <div
                       className={cn(
                         "h-full w-full transition-all duration-500 ease-in-out",

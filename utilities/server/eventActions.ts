@@ -1,5 +1,6 @@
 "use server";
 import { connectDb } from "@/lib/db";
+import { unstable_cache } from "next/cache";
 import { EventModel, IEvent } from "@/models/event.model";
 import { requireAdmin } from "@/lib/auth-guards";
 import { EventDTO } from "@/types/types";
@@ -51,44 +52,56 @@ const mapEventToDTO = (event: EventWithCategoryAndOrganizer): EventDTO => ({
   updatedAt: event.updatedAt.toISOString(),
 });
 
-export async function getPendingEvents(): Promise<EventDTO[]> {
-  await connectDb();
-  await requireAdmin();
+export const getPendingEvents = unstable_cache(
+  async (): Promise<EventDTO[]> => {
+    await connectDb();
+    await requireAdmin();
 
-  const events = await EventModel.find({ status: "draft" })
-    .populate("organizer", "name email")
-    .populate("category", "name slug")
-    .sort({ createdAt: -1 })
-    .lean<EventWithCategoryAndOrganizer[]>();
+    const events = await EventModel.find({ status: "draft" })
+      .populate("organizer", "name email")
+      .populate("category", "name slug")
+      .sort({ createdAt: -1 })
+      .lean<EventWithCategoryAndOrganizer[]>();
 
-  return events.map(mapEventToDTO);
-}
+    return events.map(mapEventToDTO);
+  },
+  ["admin-pending-events"],
+  { tags: ["admin-events"] }
+);
 
-export async function getPublishedEvents(): Promise<EventDTO[]> {
-  await connectDb();
-  await requireAdmin();
+export const getPublishedEvents = unstable_cache(
+  async (): Promise<EventDTO[]> => {
+    await connectDb();
+    await requireAdmin();
 
-  const events = await EventModel.find({ status: "published" })
-    .populate("organizer", "name email")
-    .populate("category", "name slug")
-    .sort({ createdAt: -1 })
-    .lean<EventWithCategoryAndOrganizer[]>();
+    const events = await EventModel.find({ status: "published" })
+      .populate("organizer", "name email")
+      .populate("category", "name slug")
+      .sort({ createdAt: -1 })
+      .lean<EventWithCategoryAndOrganizer[]>();
 
-  return events.map(mapEventToDTO);
-}
+    return events.map(mapEventToDTO);
+  },
+  ["admin-published-events"],
+  { tags: ["admin-events"] }
+);
 
-export async function getRejectedEvents(): Promise<EventDTO[]> {
-  await connectDb();
-  await requireAdmin();
+export const getRejectedEvents = unstable_cache(
+  async (): Promise<EventDTO[]> => {
+    await connectDb();
+    await requireAdmin();
 
-  const events = await EventModel.find({ status: "rejected" })
-    .populate("organizer", "name email")
-    .populate("category", "name slug")
-    .sort({ createdAt: -1 })
-    .lean<EventWithCategoryAndOrganizer[]>();
+    const events = await EventModel.find({ status: "rejected" })
+      .populate("organizer", "name email")
+      .populate("category", "name slug")
+      .sort({ createdAt: -1 })
+      .lean<EventWithCategoryAndOrganizer[]>();
 
-  return events.map(mapEventToDTO);
-}
+    return events.map(mapEventToDTO);
+  },
+  ["admin-rejected-events"],
+  { tags: ["admin-events"] }
+);
 
 type EventFilter = {
   status: "published";
@@ -99,54 +112,72 @@ type EventFilter = {
   category?: mongoose.Types.ObjectId;
 };
 
-export async function getEvents(searchParams: { search?: string; category?: string } = {}): Promise<EventDTO[]> {
-  await connectDb();
+export const getEvents = (searchParams: { search?: string; category?: string; limit?: number } = {}) => {
+  const { search, category: categorySlug, limit } = searchParams;
+  
+  return unstable_cache(
+    async (): Promise<EventDTO[]> => {
+      await connectDb();
+      const filter: EventFilter = { status: "published" };
 
-  const { search, category: categorySlug } = searchParams;
+      if (search) {
+        filter.$or = [
+          { title: { $regex: search, $options: "i" } },
+          { description: { $regex: search, $options: "i" } },
+        ];
+      }
 
-  const filter: EventFilter = { status: "published" };
+      if (categorySlug) {
+        const category = await CategoryModel.findOne({
+          slug: categorySlug,
+          isActive: true,
+        }).select("_id").lean();
 
-  if (search) {
-    filter.$or = [
-      { title: { $regex: search, $options: "i" } },
-      { description: { $regex: search, $options: "i" } },
-    ];
-  }
+        if (!category) {
+          return [];
+        }
 
-  if (categorySlug) {
-    const category = await CategoryModel.findOne({
-      slug: categorySlug,
-      isActive: true,
-    });
+        filter.category = category._id as mongoose.Types.ObjectId;
+      }
 
-    if (!category) {
-      return [];
-    }
+      let query = EventModel.find(filter)
+        .populate("category", "name slug")
+        .populate("organizer", "name email")
+        .sort({ startDate: 1 })
+        .select("_id title slug description shortDescription category organizer startDate endDate status mode location registrationsCount createdAt updatedAt");
 
-    filter.category = category._id;
-  }
+      if (limit) {
+        query = query.limit(limit);
+      }
 
-  const events = await EventModel.find(filter)
-    .populate("category", "name slug")
-    .populate("organizer", "name email")
-    .sort({ startDate: 1 })
-    .lean<EventWithCategoryAndOrganizer[]>();
+      const events = await query
+        .lean<EventWithCategoryAndOrganizer[]>();
 
-  return events.map(mapEventToDTO);
-}
+      return events.map(mapEventToDTO);
+    },
+    ["events-list", search || "", categorySlug || "", limit?.toString() || ""],
+    { tags: ["events-list"] }
+  )();
+};
 
-export async function getEventsBySlug(slug: string): Promise<EventDTO | null> {
-  await connectDb();
+export const getEventsBySlug = (slug: string) => {
+  return unstable_cache(
+    async (): Promise<EventDTO | null> => {
+      await connectDb();
 
-  const event = await EventModel.findOne({ slug })
-    .populate("category", "name slug")
-    .populate("organizer", "name email")
-    .lean<EventWithCategoryAndOrganizer>();
+      const event = await EventModel.findOne({ slug })
+        .populate("category", "name slug")
+        .populate("organizer", "name email")
+        .lean<EventWithCategoryAndOrganizer>();
 
-  if (!event) return null;
+      if (!event) return null;
 
-  return mapEventToDTO(event);
-}
+      return mapEventToDTO(event);
+    },
+    ["event-detail", slug],
+    { tags: [`event-${slug}`, "event-detail"] }
+  )();
+};
 
 export async function getEventRegistrations(eventId: string) {
   await connectDb();
@@ -181,3 +212,25 @@ export async function getEventRegistrations(eventId: string) {
     };
   });
 }
+
+export const getLandingPageEvents = unstable_cache(
+  async (): Promise<EventDTO[]> => {
+    await connectDb();
+
+    const now = new Date();
+    
+    const events = await EventModel.find({
+      status: "published",
+      endDate: { $gte: now },
+    })
+      .populate("category", "name slug")
+      .populate("organizer", "name email")
+      .sort({ startDate: 1 })
+      .limit(6)
+      .lean<EventWithCategoryAndOrganizer[]>();
+
+    return events.map(mapEventToDTO);
+  },
+  ["landing-page-events"],
+  { tags: ["events-list", "landing-events"] }
+);

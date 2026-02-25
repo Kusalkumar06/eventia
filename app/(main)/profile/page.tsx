@@ -61,8 +61,9 @@ export default async function ProfilePage() {
                   alt={name}
                   width={160}
                   height={160}
-                  unoptimized
+                  priority
                   className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-card bg-muted object-cover shadow-md"
+                  sizes="(max-width: 640px) 128px, 160px"
                 />
               </div>
 

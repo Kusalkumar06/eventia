@@ -3,8 +3,6 @@
 import { connectDb } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth-guards";
 import { UserModel } from "@/models/user.model";
-import { EventModel } from "@/models/event.model";
-import { RegistrationModel } from "@/models/registration.model";
 
 export interface UserMetricDTO {
   _id: string;
@@ -21,33 +19,48 @@ export async function getAdminUsersMetrics(): Promise<UserMetricDTO[]> {
     await requireAdmin();
     await connectDb();
 
-    const users = await UserModel.find({}).lean();
+    const metrics = await UserModel.aggregate([
+      {
+        $lookup: {
+          from: "events",
+          localField: "_id",
+          foreignField: "organizer",
+          as: "organizedEvents",
+        },
+      },
+      {
+        $lookup: {
+          from: "registrations",
+          localField: "_id",
+          foreignField: "user",
+          as: "attendedEvents",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          email: 1,
+          role: 1,
+          createdAt: 1,
+          eventsOrganizedCount: { $size: "$organizedEvents" },
+          eventsAttendedCount: { $size: "$attendedEvents" },
+        },
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+    ]);
 
-    const metricsPromises = users.map(async (user) => {
-      const organizedCount = await EventModel.countDocuments({
-        organizer: user._id,
-      });
-
-      const attendedCount = await RegistrationModel.countDocuments({
-        user: user._id,
-      });
-
-      return {
-        _id: user._id.toString(),
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt?.toISOString() || new Date().toISOString(),
-        eventsOrganizedCount: organizedCount,
-        eventsAttendedCount: attendedCount,
-      };
-    });
-
-    const metrics = await Promise.all(metricsPromises);
-
-    return metrics.sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    return metrics.map((user) => ({
+      _id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt?.toISOString() || new Date().toISOString(),
+      eventsOrganizedCount: user.eventsOrganizedCount,
+      eventsAttendedCount: user.eventsAttendedCount,
+    }));
   } catch (error) {
     console.error("Failed to fetch user metrics:", error);
     throw new Error("Failed to fetch user metrics");

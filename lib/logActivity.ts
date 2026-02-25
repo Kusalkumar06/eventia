@@ -11,7 +11,21 @@ interface LogActivityParams {
   message: string;
 }
 
-export async function logActivity({
+/**
+ * Log activity in a non-blocking (fire-and-forget) manner.
+ * Main request will not wait for this to finish unless explicitly awaited.
+ */
+export function logActivity(params: LogActivityParams) {
+  // Fire and forget: catch internal errors so they don't affect the caller
+  logActivityInternal(params).catch((err) => {
+    console.error(`[ActivityLogger] Error:`, err);
+  });
+}
+
+/**
+ * Internal async function that performs the actual database write.
+ */
+async function logActivityInternal({
   actorId,
   actorRole,
   action,
@@ -20,8 +34,10 @@ export async function logActivity({
   message,
 }: LogActivityParams) {
   try {
+    // Ensure DB connection
     await connectDb();
 
+    // Create log entry with normalized ObjectIds
     await ActivityModel.create({
       actor: new mongoose.Types.ObjectId(actorId),
       actorRole,
@@ -30,7 +46,8 @@ export async function logActivity({
       entityId: new mongoose.Types.ObjectId(entityId),
       message,
     });
-  } catch (error: unknown) {
-    console.error("Failed to log activity:", error);
+  } catch (error) {
+    // Re-throw to be caught by the fire-and-forget wrapper
+    throw error;
   }
 }

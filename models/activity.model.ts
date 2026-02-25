@@ -58,11 +58,19 @@ const activitySchema = new Schema<IActivity>(
       required: true,
     },
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    autoIndex: process.env.NODE_ENV !== "production"
+  }
 );
 
 // Add descending index on createdAt for dashboard performance
 activitySchema.index({ createdAt: -1 });
+
+// Compound indexes for common query patterns
+activitySchema.index({ actor: 1, createdAt: -1 });
+activitySchema.index({ entityId: 1, createdAt: -1 });
+activitySchema.index({ action: 1, createdAt: -1 });
 
 export const ActivityModel: Model<IActivity> =
   mongoose.models.Activity || mongoose.model<IActivity>("Activity", activitySchema);

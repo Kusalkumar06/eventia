@@ -1,7 +1,6 @@
 import { requireAuth } from "@/lib/auth-guards";
 import { redirect } from "next/navigation";
-import { connectDb } from "@/lib/db";
-import { CategoryModel } from "@/models/category.model";
+import { getCategories } from "@/utilities/server/categoryActions";
 import EventForm from "../../../components/createEvent/EventForm";
 
 export const dynamic = "force-dynamic";
@@ -13,20 +12,8 @@ export default async function CreateEventPage() {
     redirect("/signIn");
   }
 
-  await connectDb();
-
-  // Fetch active categories to pass to the client form
-  const categories = await CategoryModel.find({ isActive: true })
-    .select("_id name slug")
-    .sort({ name: 1 })
-    .lean();
-
-  // Serialize the categories for the client component
-  const serializedCategories = categories.map((cat) => ({
-    _id: cat._id.toString(),
-    name: cat.name,
-    slug: cat.slug,
-  }));
+  // Fetch active categories using the cached server action
+  const categories = await getCategories();
 
   return (
     <div className="min-h-screen bg-muted/30 py-10 px-4 sm:px-6 lg:px-8">
@@ -41,7 +28,7 @@ export default async function CreateEventPage() {
         </div>
 
         <div className="bg-card text-card-foreground rounded-2xl border border-border shadow-sm overflow-hidden p-6 sm:p-8">
-          <EventForm categories={serializedCategories} />
+          <EventForm categories={categories} />
         </div>
       </div>
     </div>

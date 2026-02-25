@@ -22,7 +22,10 @@ const registrationSchema = new Schema<IRegistration>(
       index: true,
     },
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    autoIndex: process.env.NODE_ENV !== "production"
+  }
 );
 
 registrationSchema.index({ user: 1, event: 1 }, { unique: true });

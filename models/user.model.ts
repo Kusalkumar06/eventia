@@ -52,7 +52,10 @@ const userSchema = new Schema<IUser>(
       default: false,
     },
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    autoIndex: process.env.NODE_ENV !== "production"
+  }
 )
 
 userSchema.index({ name: "text", email: "text" });

@@ -3,7 +3,7 @@ import { Loader2 } from "lucide-react";
 
 const Loading = () => {
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background/60 backdrop-blur-2xl transition-all duration-500">
+    <div className="fixed inset-0 z-9999 flex flex-col items-center justify-center bg-background/60 backdrop-blur-2xl transition-all duration-500">
       <div className="relative flex flex-col items-center">
         <div className="absolute -inset-10 bg-primary/15 rounded-full blur-[60px] animate-pulse" />
 
@@ -17,8 +17,11 @@ const Loading = () => {
           </div>
 
           <div className="flex flex-col items-center gap-1">
-            <h2 className="text-4xl font-extrabold tracking-tighter text-foreground drop-shadow-sm">
-              <span className="bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary/60">
+            <h2
+              className="text-4xl font-extrabold tracking-tighter text-foreground drop-shadow-sm"
+              id="loading-title"
+            >
+              <span className="bg-clip-text text-transparent bg-linear-to-b from-primary to-primary/60">
                 Eventia
               </span>
             </h2>

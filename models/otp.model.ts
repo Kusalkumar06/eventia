@@ -33,7 +33,10 @@ const OtpSchema = new Schema<IOtp>(
       required: true,
     },
   },
-  { timestamps: { createdAt: true, updatedAt: false } }
+  { 
+    timestamps: { createdAt: true, updatedAt: false },
+    autoIndex: process.env.NODE_ENV !== "production"
+  }
 );
 
 OtpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });

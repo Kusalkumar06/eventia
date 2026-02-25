@@ -204,7 +204,7 @@ const EventCard = ({
           )}
         </div>
 
-        <div className="space-y-3 mt-4 text-muted-foreground flex-grow">
+        <div className="space-y-3 mt-4 text-muted-foreground grow">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4" />
             <p className="text-sm">{formatEventDate(startDate, endDate)}</p>
@@ -284,7 +284,7 @@ const EventCard = ({
         )}
       </div>
 
-      <div className="my-5 flex-grow">
+      <div className="my-5 grow">
         <p className="text-sm text-muted-foreground line-clamp-2">
           {shortDescription}
         </p>

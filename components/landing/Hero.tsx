@@ -3,8 +3,8 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Search } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
+import EventImage from "@/components/shared/EventImage";
 
 export default function Hero() {
   const targetRef = useRef<HTMLDivElement>(null);
@@ -22,12 +22,13 @@ export default function Hero() {
       className="relative h-screen w-full overflow-hidden bg-background text-foreground"
     >
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
-        <Image
+        <EventImage
           src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2070&auto=format&fit=crop"
           alt="Event Atmosphere"
           fill
-          className="object-cover object-center sm:object-top"
+          sizes="100vw"
           priority
+          containerClassName="h-full w-full"
         />
         <div className="absolute inset-0 bg-linear-to-b from-black/70 via-black/40 to-black z-10" />
       </motion.div>
