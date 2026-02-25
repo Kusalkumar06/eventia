@@ -67,7 +67,7 @@ const EventTab = ({ events }: { events: EventDTO[] }) => {
           );
         })}
       </div>
-      <div className="cards-wrapper grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-15 lg:px-15">
+      <div className="cards-wrapper grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-15 px-4 md:px-10 lg:px-15 transition-all duration-300">
         {filteredEvents.length > 0 ? (
           filteredEvents.map((event: EventDTO) => (
             <EventCard key={event._id.toString()} event={event} />

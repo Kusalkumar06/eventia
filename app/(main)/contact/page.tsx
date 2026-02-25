@@ -11,7 +11,7 @@ export default function ContactPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-background py-20 lg:py-32">
+      <section className="relative overflow-hidden bg-background py-25 lg:py-32">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-size-[14px_24px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
         <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/3">
           <div className="w-[400px] h-[400px] rounded-full bg-primary/20 blur-3xl opacity-50" />

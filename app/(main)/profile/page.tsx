@@ -34,7 +34,7 @@ export default async function ProfilePage() {
   const joinedDate = new Date(user.createdAt);
 
   return (
-    <div className="min-h-screen bg-muted/30 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-muted/30 pt-25 pb-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">

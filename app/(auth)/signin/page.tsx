@@ -114,47 +114,67 @@ export default function AuthPage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8 font-sans transition-colors duration-300">
       <div
-        className={`relative bg-card rounded-2xl shadow-2xl overflow-hidden max-w-full min-h-[550px] w-[868px] border border-border transition-all duration-300 ${
+        className={`relative bg-card rounded-2xl shadow-2xl overflow-hidden max-w-full min-h-[550px] w-full md:w-[868px] border border-border transition-all duration-300 ${
           isRightPanelActive ? "right-panel-active" : ""
         }`}
         id="container"
       >
         <div
-          className={`form-container sign-up-container absolute top-0 h-full transition-all duration-600 ease-in-out left-0 w-1/2 z-10 ${
+          className={`form-container sign-up-container absolute top-0 h-full transition-all duration-600 ease-in-out left-0 w-full md:w-1/2 z-10 ${
             isRightPanelActive
-              ? "opacity-100 translate-x-full z-50 animate-show"
-              : "opacity-0 z-10"
+              ? "opacity-100 translate-x-0 md:translate-x-full z-50 animate-show"
+              : "opacity-0 z-10 -translate-x-full md:translate-x-0"
           }`}
         >
           {!showOtpPanel ? (
             <form
               onSubmit={handleSignUp}
-              className="bg-card flex flex-col items-center justify-center h-full px-12 text-center"
+              className="bg-card flex flex-col items-center justify-center h-full px-8 md:px-12 text-center"
             >
-              <h1 className="font-bold text-3xl mb-4 text-foreground">
+              <h1 className="font-bold text-2xl md:text-3xl mb-4 text-foreground">
                 Create Account
               </h1>
-              <div className="social-container flex gap-4 my-4">
+              <div className="social-container w-full mb-4">
                 <button
                   type="button"
                   onClick={() => {
                     sessionStorage.setItem("googleLogin", "pending");
                     signIn("google", { callbackUrl: "/" });
                   }}
-                  className="border border-border rounded-full w-10 h-10 flex items-center justify-center text-foreground hover:bg-muted transition"
+                  className="flex items-center justify-center gap-3 w-full border border-border rounded-lg py-2.5 px-4 text-sm font-medium text-foreground hover:bg-muted transition-all duration-300 active:scale-[0.98]"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 640 640"
-                    className="fill-current"
+                    className="w-5 h-5"
                   >
-                    <path d="M564 325.8C564 467.3 467.1 568 324 568C186.8 568 76 457.2 76 320C76 182.8 186.8 72 324 72C390.8 72 447 96.5 490.3 136.9L422.8 201.8C334.5 116.6 170.3 180.6 170.3 320C170.3 406.5 239.4 476.6 324 476.6C422.2 476.6 459 406.2 464.8 369.7L324 369.7L324 284.4L560.1 284.4C562.4 297.1 564 309.3 564 325.8z" />
+                    <path
+                      fill="#4285F4"
+                      d="M512 320c0-11-1-21-3-31H320v60h108c-5 25-19 46-40 60v50h65c38-35 60-86 60-147z"
+                    />
+                    <path
+                      fill="#34A853"
+                      d="M320 512c52 0 95-17 127-46l-65-50c-18 12-41 19-62 19-48 0-89-32-103-76H148v52c32 63 97 106 172 106z"
+                    />
+                    <path
+                      fill="#FBBC05"
+                      d="M217 359c-3-10-5-20-5-30s2-20 5-30V247H148c-10 20-15 42-15 65s5 45 15 65l69-53c0 0 0 0 0 0z"
+                    />
+                    <path
+                      fill="#EA4335"
+                      d="M320 128c28 0 53 10 73 29l55-55C415 72 371 52 320 52c-75 0-140 43-172 106l69 53c14-44 55-76 103-76z"
+                    />
                   </svg>
+                  <span>Sign up with Google</span>
                 </button>
               </div>
-              <span className="text-xs text-muted-foreground mb-4">
-                or use your email for registration
-              </span>
+              <div className="flex items-center w-full mb-4">
+                <div className="flex-1 h-px bg-border"></div>
+                <span className="px-3 text-xs text-muted-foreground uppercase">
+                  or
+                </span>
+                <div className="flex-1 h-px bg-border"></div>
+              </div>
 
               <div className="w-full relative mb-3">
                 <User
@@ -208,17 +228,25 @@ export default function AuthPage() {
                 </button>
               </div>
 
-              <button className="mt-4 rounded-full border border-primary bg-primary text-white text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 hover:shadow-lg focus:outline-none">
+              <button className="mt-4 w-full md:w-auto rounded-full border border-primary bg-primary text-white text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 hover:shadow-lg focus:outline-none">
                 Sign Up
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsRightPanelActive(false)}
+                className="mt-6 text-sm text-primary font-medium md:hidden"
+              >
+                Already have an account? Sign In
               </button>
             </form>
           ) : (
             <form
               onSubmit={handleVerifyOtp}
-              className="bg-card flex flex-col items-center justify-center h-full px-12 text-center animate-fade-in"
+              className="bg-card flex flex-col items-center justify-center h-full px-8 md:px-12 text-center animate-fade-in"
             >
               <CheckCircle size={48} className="text-primary mb-4" />
-              <h1 className="font-bold text-3xl mb-4 text-foreground">
+              <h1 className="font-bold text-2xl md:text-3xl mb-4 text-foreground">
                 Verify OTP
               </h1>
               <p className="text-sm text-muted-foreground mb-6 font-light">
@@ -241,7 +269,7 @@ export default function AuthPage() {
                 />
               </div>
 
-              <button className="mt-4 rounded-full border border-primary bg-primary text-white text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 hover:shadow-lg focus:outline-none">
+              <button className="mt-4 w-full md:w-auto rounded-full border border-primary bg-primary text-white text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 hover:shadow-lg focus:outline-none">
                 Verify & Login
               </button>
 
@@ -257,36 +285,60 @@ export default function AuthPage() {
         </div>
 
         <div
-          className={`form-container sign-in-container absolute top-0 h-full transition-all duration-600 ease-in-out left-0 w-1/2 z-20 ${
-            isRightPanelActive ? "translate-x-full" : ""
+          className={`form-container sign-in-container absolute top-0 h-full transition-all duration-600 ease-in-out left-0 w-full md:w-1/2 z-20 ${
+            isRightPanelActive
+              ? "opacity-0 -translate-x-full md:translate-x-full"
+              : "opacity-100 translate-x-0"
           }`}
         >
           <form
             onSubmit={handleSignIn}
-            className="bg-card flex flex-col items-center justify-center h-full px-12 text-center"
+            className="bg-card flex flex-col items-center justify-center h-full px-8 md:px-12 text-center"
           >
-            <h1 className="font-bold text-3xl mb-4 text-foreground">Sign in</h1>
-            <div className="social-container flex gap-4 my-4">
+            <h1 className="font-bold text-2xl md:text-3xl mb-4 text-foreground">
+              Sign in
+            </h1>
+            <div className="social-container w-full mb-4">
               <button
                 type="button"
                 onClick={() => {
                   sessionStorage.setItem("googleLogin", "pending");
                   signIn("google", { callbackUrl: "/" });
                 }}
-                className="border border-border rounded-full w-10 h-10 flex items-center justify-center text-foreground hover:bg-muted transition"
+                className="flex items-center justify-center gap-3 w-full border border-border rounded-lg py-2.5 px-4 text-sm font-medium text-foreground hover:bg-muted transition-all duration-300 active:scale-[0.98]"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 640 640"
-                  className="fill-current"
+                  className="w-5 h-5"
                 >
-                  <path d="M564 325.8C564 467.3 467.1 568 324 568C186.8 568 76 457.2 76 320C76 182.8 186.8 72 324 72C390.8 72 447 96.5 490.3 136.9L422.8 201.8C334.5 116.6 170.3 180.6 170.3 320C170.3 406.5 239.4 476.6 324 476.6C422.2 476.6 459 406.2 464.8 369.7L324 369.7L324 284.4L560.1 284.4C562.4 297.1 564 309.3 564 325.8z" />
+                  <path
+                    fill="#4285F4"
+                    d="M512 320c0-11-1-21-3-31H320v60h108c-5 25-19 46-40 60v50h65c38-35 60-86 60-147z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M320 512c52 0 95-17 127-46l-65-50c-18 12-41 19-62 19-48 0-89-32-103-76H148v52c32 63 97 106 172 106z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M217 359c-3-10-5-20-5-30s2-20 5-30V247H148c-10 20-15 42-15 65s5 45 15 65l69-53c0 0 0 0 0 0z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M320 128c28 0 53 10 73 29l55-55C415 72 371 52 320 52c-75 0-140 43-172 106l69 53c14-44 55-76 103-76z"
+                  />
                 </svg>
+                <span>Sign in with Google</span>
               </button>
             </div>
-            <span className="text-xs text-muted-foreground mb-4">
-              or use your account
-            </span>
+            <div className="flex items-center w-full mb-4">
+              <div className="flex-1 h-px bg-border"></div>
+              <span className="px-3 text-xs text-muted-foreground uppercase">
+                or
+              </span>
+              <div className="flex-1 h-px bg-border"></div>
+            </div>
 
             <div className="w-full relative mb-3">
               <Mail
@@ -332,14 +384,22 @@ export default function AuthPage() {
               Forgot your password?
             </Link>
 
-            <button className="mt-4 rounded-full border border-primary bg-primary text-white text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 hover:shadow-lg focus:outline-none">
+            <button className="mt-4 w-full md:w-auto rounded-full border border-primary bg-primary text-white text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 hover:shadow-lg focus:outline-none">
               Sign In
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsRightPanelActive(true)}
+              className="mt-6 text-sm text-primary font-medium md:hidden"
+            >
+              Don't have an account? Sign Up
             </button>
           </form>
         </div>
 
         <div
-          className={`overlay-container absolute top-0 left-1/2 w-1/2 h-full overflow-hidden transition-transform duration-600 ease-in-out z-100 ${
+          className={`overlay-container absolute top-0 left-1/2 w-1/2 h-full overflow-hidden transition-transform duration-600 ease-in-out z-100 hidden md:block ${
             isRightPanelActive ? "-translate-x-full" : ""
           }`}
         >
@@ -358,7 +418,7 @@ export default function AuthPage() {
                 To keep connected with us please login with your personal info
               </p>
               <button
-                className="ghost rounded-full border border-current bg-transparent text-current text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 focus:outline-none"
+                className="ghost rounded-full border border-current bg-transparent text-current text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 focus:outline-none cursor-pointer"
                 onClick={() => setIsRightPanelActive(false)}
               >
                 Sign In
@@ -374,7 +434,7 @@ export default function AuthPage() {
                 Enter your personal details and start your journey with us
               </p>
               <button
-                className="ghost rounded-full border border-current bg-transparent text-current text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 focus:outline-none 0 "
+                className="ghost rounded-full border border-current bg-transparent text-current text-xs font-bold py-3 px-12 tracking-wide uppercase transition-transform active:scale-95 focus:outline-none cursor-pointer"
                 onClick={() => setIsRightPanelActive(true)}
               >
                 Sign Up

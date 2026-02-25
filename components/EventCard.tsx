@@ -240,21 +240,24 @@ const EventCard = ({
   }
 
   return (
-    <article className="event-card bg-card text-foreground border border-border rounded-xl p-5 flex flex-col h-full shadow-lg hover:shadow-2xl transition-all duration-300">
-      <div className="flex items-start justify-between gap-5">
-        <h3 className="text-lg font-semibold line-clamp-2" title={title}>
+    <article className="event-card bg-card text-foreground border border-border rounded-xl p-4 md:p-5 flex flex-col h-full shadow-lg hover:shadow-2xl transition-all duration-300">
+      <div className="flex items-start justify-between gap-3 md:gap-5">
+        <h3
+          className="text-base md:text-lg font-semibold line-clamp-2"
+          title={title}
+        >
           {title}
         </h3>
 
         {variant === "public" ? (
-          <span className="text-sm bg-primary text-primary-foreground px-4 py-1 rounded-lg shrink-0">
+          <span className="text-xs bg-primary text-primary-foreground px-3 md:px-4 py-1 rounded-lg shrink-0">
             {categoryDisplay}
           </span>
         ) : (
           <div className="shrink-0 flex items-center gap-2">
             {status === "rejected" && rejectionReason && (
               <span
-                className="text-xs max-w-[120px] truncate text-red-500 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded w-fit inline-block"
+                className="text-[10px] md:text-xs max-w-[80px] md:max-w-[120px] truncate text-red-500 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded w-fit inline-block"
                 title={rejectionReason}
               >
                 Reason: {rejectionReason}
@@ -284,45 +287,50 @@ const EventCard = ({
         )}
       </div>
 
-      <div className="my-5 grow">
-        <p className="text-sm text-muted-foreground line-clamp-2">
+      <div className="my-4 md:my-5 grow">
+        <p className="text-xs md:text-sm text-muted-foreground line-clamp-2">
           {shortDescription}
         </p>
       </div>
 
-      <div className="space-y-3 my-2 text-muted-foreground">
+      <div className="space-y-2 md:space-y-3 my-2 text-muted-foreground">
         <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4" />
-          <p className="text-sm">{formatEventDate(startDate, endDate)}</p>
+          <Calendar className="w-3.5 md:w-4 h-3.5 md:h-4" />
+          <p className="text-xs md:text-sm">
+            {formatEventDate(startDate, endDate)}
+          </p>
         </div>
 
         {mode === "offline" ? (
           <>
             <div className="flex items-center gap-2">
-              <Landmark className="w-4 h-4" />
-              <p className="text-sm truncate" title={location?.venue}>
+              <Landmark className="w-3.5 md:w-4 h-3.5 md:h-4" />
+              <p
+                className="text-xs md:text-sm truncate"
+                title={location?.venue}
+              >
                 {location?.venue}
               </p>
             </div>
 
             <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              <p className="text-sm truncate">
+              <MapPin className="w-3.5 md:w-4 h-3.5 md:h-4" />
+              <p className="text-xs md:text-sm truncate">
                 {location?.city}, {location?.state}
               </p>
             </div>
           </>
         ) : (
           <div className="flex items-center gap-2">
-            <CircleDot className="w-4 h-4" />
-            <p className="text-sm">Online Event</p>
+            <CircleDot className="w-3.5 md:w-4 h-3.5 md:h-4" />
+            <p className="text-xs md:text-sm">Online Event</p>
           </div>
         )}
 
         {!isCompleted && variant === "public" && (
           <div className="flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            <p className="text-sm">
+            <Users className="w-3.5 md:w-4 h-3.5 md:h-4" />
+            <p className="text-xs md:text-sm">
               Slots:{" "}
               <span
                 className={`font-semibold ${
@@ -341,8 +349,8 @@ const EventCard = ({
 
         {variant === "organizing" && (
           <div className="flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            <p className="text-sm">
+            <Users className="w-3.5 md:w-4 h-3.5 md:h-4" />
+            <p className="text-xs md:text-sm">
               Registrations:{" "}
               <span className="font-semibold text-foreground">
                 {registrationsCount}
@@ -361,11 +369,13 @@ const EventCard = ({
       <footer className="mt-4 pt-4 border-t border-border/50">
         {variant === "organizing" || variant === "public" ? (
           <div className="flex justify-between items-center text-muted-foreground mb-2">
-            <p className="text-xs">Organized by {organizer.name}</p>
+            <p className="text-[10px] md:text-xs">
+              Organized by {organizer.name}
+            </p>
           </div>
         ) : null}
 
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           {variant === "organizing" ? (
             <div className="flex items-center gap-2 w-full justify-end">
               <Link
@@ -418,14 +428,14 @@ const EventCard = ({
             </div>
           ) : (
             <>
-              <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                <Clock className="w-4 h-4" />
+              <div className="flex items-center gap-2 text-muted-foreground text-xs md:text-sm">
+                <Clock className="w-3.5 md:w-4 h-3.5 md:h-4" />
                 <p>{eventLabel}</p>
               </div>
 
               <Link
                 href={`/events/${slug}`}
-                className="cursor-pointer bg-primary/10 text-primary px-4 py-1.5 text-sm rounded-lg flex items-center gap-2 hover:bg-primary hover:text-primary-foreground transition-all duration-300 font-medium"
+                className="w-full sm:w-auto cursor-pointer bg-primary/10 text-primary px-4 py-1.5 text-xs md:text-sm rounded-lg flex items-center justify-center gap-2 hover:bg-primary hover:text-primary-foreground transition-all duration-300 font-medium"
               >
                 <SquareArrowOutUpRight className="w-4 h-4" />
                 <p>View Details</p>

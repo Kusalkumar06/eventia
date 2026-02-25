@@ -6,7 +6,16 @@ import EventImage from "@/components/shared/EventImage";
 import Link from "next/link";
 import { EventDTO } from "@/types/types";
 
-const EventCard = ({ event }: { event: EventDTO }) => {
+const EVENT_IMAGES = [
+  "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?q=80&w=2070&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2070&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1514525253361-bee8a187429e?q=80&w=2070&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1475721027187-402ad2989a3b?q=80&w=2070&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=2070&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1540575861501-7ad060e39fe1?q=80&w=2070&auto=format&fit=crop",
+];
+
+const EventCard = ({ event, imgSrc }: { event: EventDTO; imgSrc: string }) => {
   const eventDate = new Date(event.startDate).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -20,7 +29,7 @@ const EventCard = ({ event }: { event: EventDTO }) => {
     >
       <div className="relative h-48 w-full overflow-hidden">
         <EventImage
-          src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?q=80&w=2070&auto=format&fit=crop"
+          src={imgSrc}
           alt={event.title}
           fill
           sizes="(max-width: 768px) 300px, 350px"
@@ -70,7 +79,11 @@ export default function LiveEventsClient({ events }: { events: EventDTO[] }) {
         style={{ width: "fit-content" }}
       >
         {[...events, ...events, ...events].map((event, idx) => (
-          <EventCard key={`${event._id}-${idx}`} event={event} />
+          <EventCard
+            key={`${event._id}-${idx}`}
+            event={event}
+            imgSrc={EVENT_IMAGES[idx % EVENT_IMAGES.length]}
+          />
         ))}
       </motion.div>
       <div className="absolute left-0 top-0 bottom-0 w-24 bg-linear-to-r from-background to-transparent z-10 pointer-events-none" />

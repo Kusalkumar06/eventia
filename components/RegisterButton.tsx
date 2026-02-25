@@ -51,6 +51,7 @@ const RegisterButton: React.FC<RegisterButtonProps> = ({
 
         if (response.success) {
           setIsRegistered(!isRegistered);
+          router.refresh(); // Force refresh of server component data
           if (isRegistered) {
             toast.success("Successfully unregistered from event");
           } else {

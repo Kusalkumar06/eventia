@@ -1,5 +1,3 @@
-export const revalidate = 3600; // revalidate every 1 hour
-
 import React from "react";
 import Link from "next/link";
 import {
@@ -226,6 +224,7 @@ const EventDetailsPage = async (props: {
                 attending
               </p>
               <RegisterButton
+                key={`${event._id.toString()}-${registrationsCount}-${initialIsRegistered}`}
                 eventId={event._id}
                 endDate={endDate}
                 isRegistrationRequired={event.isRegistrationRequired}

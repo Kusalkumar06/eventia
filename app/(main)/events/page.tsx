@@ -1,5 +1,3 @@
-export const revalidate = 3600; // revalidate every 1 hour
-
 import FilterComponent from "@/components/events/FilterComponent";
 import EventTab from "@/components/events/EventTab";
 
@@ -32,7 +30,7 @@ const Events = async ({ searchParams }: HomeProps) => {
           Find events that match your interests and availability
         </p>
       </div>
-      <div className="px-18 rounded-md">
+      <div className="px-4 sm:px-6 lg:px-8 rounded-md">
         <FilterComponent
           selectedCategory={selectedCategory}
           categories={categories}

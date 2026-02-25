@@ -153,7 +153,7 @@ export const getEvents = async(searchParams: { search?: string; category?: strin
         .populate("category", "name slug")
         .populate("organizer", "name email")
         .sort({ startDate: 1 })
-        .select("_id title slug description shortDescription category organizer startDate endDate status mode location registrationsCount createdAt updatedAt");
+        .select("_id title slug description shortDescription category organizer startDate endDate status mode location registrationsCount createdAt updatedAt isRegistrationRequired maxRegistrations tags onlineURL otherCategoryLabel");
 
       if (limit) {
         query = query.limit(limit);
@@ -180,11 +180,10 @@ export const  getEventsBySlug = async (slug: string) => {
         .lean<EventWithCategoryAndOrganizer>();
 
       if (!event) return null;
-
       return mapEventToDTO(event);
     },
     ["event-detail", slug],
-    { tags: [`event-${slug}`, "event-detail"] }
+    { tags: [`event-${slug}`] }
   )();
 };
 
@@ -241,5 +240,5 @@ export const getLandingPageEvents = unstable_cache(
     return events.map(mapEventToDTO);
   },
   ["landing-page-events"],
-  { tags: ["events-list", "landing-events"] }
+  { tags: ["events-list"] }
 );

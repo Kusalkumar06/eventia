@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Search } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import EventImage from "@/components/shared/EventImage";
 
@@ -50,25 +50,11 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
-          className="mt-6 max-w-2xl text-lg font-light text-zinc-300 sm:text-xl"
+          className="mt-6 max-w-2xl font-black text-lg text-zinc-300 sm:text-xl"
         >
           Discover the extraordinary. <br className="hidden sm:block" />
           The world&apos;s most immersive event platform.
         </motion.p>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
-          className="mt-8 flex w-full max-w-md items-center overflow-hidden rounded-full bg-white/10 border border-white/10 backdrop-blur-md transition-all focus-within:ring-2 focus-within:ring-primary/50 focus-within:bg-white/15"
-        >
-          <Search className="ml-4 h-5 w-5 text-zinc-400" />
-          <input
-            type="text"
-            placeholder="Search events, artists, or venues..."
-            className="flex-1 bg-transparent px-4 py-3 text-white placeholder-zinc-400 focus:outline-none"
-          />
-        </motion.div>
-
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

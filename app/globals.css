@@ -187,8 +187,10 @@ h6 {
    CARDS HOVER EFFECT (YOUR BLUR LOGIC)
 ========================================================= */
 
-.cards-wrapper:has(.event-card:hover) .event-card:not(:hover) {
-  filter: blur(2px);
-  opacity: 0.8;
-  transform: scale(0.98);
+@media (min-width: 1024px) {
+  .cards-wrapper:has(.event-card:hover) .event-card:not(:hover) {
+    filter: blur(2px);
+    opacity: 0.8;
+    transform: scale(0.98);
+  }
 }

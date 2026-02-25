@@ -33,7 +33,7 @@ export default async function EditEventPage(props: {
   const categories = await getCategories();
 
   return (
-    <div className="min-h-screen bg-muted/30 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-muted/30 pt-25 pb-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
