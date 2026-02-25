@@ -52,56 +52,65 @@ const mapEventToDTO = (event: EventWithCategoryAndOrganizer): EventDTO => ({
   updatedAt: event.updatedAt.toISOString(),
 });
 
-export const getPendingEvents = unstable_cache(
-  async (): Promise<EventDTO[]> => {
-    await connectDb();
-    await requireAdmin();
+export async function getPendingEvents() {
+  await requireAdmin();
+  
+  return unstable_cache(
+    async (): Promise<EventDTO[]> => {
+      await connectDb();
 
-    const events = await EventModel.find({ status: "draft" })
-      .populate("organizer", "name email")
-      .populate("category", "name slug")
-      .sort({ createdAt: -1 })
-      .lean<EventWithCategoryAndOrganizer[]>();
+      const events = await EventModel.find({ status: "draft" })
+        .populate("organizer", "name email")
+        .populate("category", "name slug")
+        .sort({ createdAt: -1 })
+        .lean<EventWithCategoryAndOrganizer[]>();
 
-    return events.map(mapEventToDTO);
-  },
-  ["admin-pending-events"],
-  { tags: ["admin-events"] }
-);
+      return events.map(mapEventToDTO);
+    },
+    ["admin-pending-events"],
+    { tags: ["admin-events"] }
+  )();
+}
 
-export const getPublishedEvents = unstable_cache(
-  async (): Promise<EventDTO[]> => {
-    await connectDb();
-    await requireAdmin();
+export async function getPublishedEvents() {
+  await requireAdmin();
+  
+  return unstable_cache(
+    async (): Promise<EventDTO[]> => {
+      await connectDb();
 
-    const events = await EventModel.find({ status: "published" })
-      .populate("organizer", "name email")
-      .populate("category", "name slug")
-      .sort({ createdAt: -1 })
-      .lean<EventWithCategoryAndOrganizer[]>();
+      const events = await EventModel.find({ status: "published" })
+        .populate("organizer", "name email")
+        .populate("category", "name slug")
+        .sort({ createdAt: -1 })
+        .lean<EventWithCategoryAndOrganizer[]>();
 
-    return events.map(mapEventToDTO);
-  },
-  ["admin-published-events"],
-  { tags: ["admin-events"] }
-);
+      return events.map(mapEventToDTO);
+    },
+    ["admin-published-events"],
+    { tags: ["admin-events"] }
+  )();
+}
 
-export const getRejectedEvents = unstable_cache(
-  async (): Promise<EventDTO[]> => {
-    await connectDb();
-    await requireAdmin();
+export async function getRejectedEvents() {
+  await requireAdmin();
+  
+  return unstable_cache(
+    async (): Promise<EventDTO[]> => {
+      await connectDb();
 
-    const events = await EventModel.find({ status: "rejected" })
-      .populate("organizer", "name email")
-      .populate("category", "name slug")
-      .sort({ createdAt: -1 })
-      .lean<EventWithCategoryAndOrganizer[]>();
+      const events = await EventModel.find({ status: "rejected" })
+        .populate("organizer", "name email")
+        .populate("category", "name slug")
+        .sort({ createdAt: -1 })
+        .lean<EventWithCategoryAndOrganizer[]>();
 
-    return events.map(mapEventToDTO);
-  },
-  ["admin-rejected-events"],
-  { tags: ["admin-events"] }
-);
+      return events.map(mapEventToDTO);
+    },
+    ["admin-rejected-events"],
+    { tags: ["admin-events"] }
+  )();
+}
 
 type EventFilter = {
   status: "published";
