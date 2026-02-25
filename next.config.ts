@@ -6,9 +6,6 @@ const withBundleAnalyzer = bundleAnalyzer({
 });
 
 const nextConfig: NextConfig = {
-  experimental: {
-    ppr: "incremental",
-  },
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
