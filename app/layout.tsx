@@ -34,6 +34,9 @@ export const metadata: Metadata = {
     description:
       "The next generation event management platform for immersive experiences.",
   },
+  icons: {
+    icon: "/eventia_theme_logo.png",
+  },
 };
 
 export default function RootLayout({
