@@ -10,8 +10,30 @@ import "./globals.css";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "Eventia",
-  description: "The next generation event management platform for immersive experiences.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  ),
+  title: {
+    default: "Eventia",
+    template: "%s | Eventia",
+  },
+  description:
+    "The next generation event management platform for immersive experiences.",
+  openGraph: {
+    title: "Eventia",
+    description:
+      "The next generation event management platform for immersive experiences.",
+    url: "/",
+    siteName: "Eventia",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Eventia",
+    description:
+      "The next generation event management platform for immersive experiences.",
+  },
 };
 
 export default function RootLayout({

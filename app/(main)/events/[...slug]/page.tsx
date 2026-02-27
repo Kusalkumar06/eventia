@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { Metadata } from "next";
 import {
   Calendar,
   Clock,
@@ -16,6 +17,46 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { RegistrationModel } from "@/models/registration.model";
 import { connectDb } from "@/lib/db";
+
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string[] }>;
+}): Promise<Metadata> {
+  const params = await props.params;
+  const slug = params.slug;
+  const eventSlug = Array.isArray(slug) ? slug[slug.length - 1] : slug;
+  const event = await getEventsBySlug(eventSlug);
+
+  if (!event) {
+    return {
+      title: "Event Not Found",
+    };
+  }
+
+  const { title, shortDescription, description } = event;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+  let plainDescription = shortDescription || description || "Event details...";
+  if (plainDescription.length > 160) {
+    plainDescription = plainDescription.substring(0, 157) + "...";
+  }
+
+  return {
+    title: title,
+    description: plainDescription,
+    openGraph: {
+      title: title,
+      description: plainDescription,
+      url: `${baseUrl}/events/${eventSlug}`,
+      siteName: "Eventia",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: title,
+      description: plainDescription,
+    },
+  };
+}
 
 const EventDetailsPage = async (props: {
   params: Promise<{ slug: string[] }>;

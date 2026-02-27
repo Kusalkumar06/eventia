@@ -393,7 +393,7 @@ export default function AuthPage() {
               onClick={() => setIsRightPanelActive(true)}
               className="mt-6 text-sm text-primary font-medium md:hidden"
             >
-              Don't have an account? Sign Up
+              Don&apos;t have an account? Sign Up
             </button>
           </form>
         </div>

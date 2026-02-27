@@ -215,7 +215,7 @@ export async function unregisterFromEventAction(eventId: string) {
                   </div>
                   
                   <p style="color: #6b7280; font-size: 14px; margin-top: 32px; border-top: 1px solid #e5e7eb; padding-top: 16px;">
-                    Changed your mind? You can always register again from the <a href="${process.env.NEXTAUTH_URL}/events/${event.slug}" style="color: #d97706;">event page</a>, provided there are still open slots.
+                    Changed your mind? You can always register again from the <a href="${process.env.NEXT_PUBLIC_APP_URL}/events/${event.slug}" style="color: #d97706;">event page</a>, provided there are still open slots.
                   </p>
                 </div>
               </div>

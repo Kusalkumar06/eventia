@@ -30,7 +30,7 @@ const Events = async ({ searchParams }: HomeProps) => {
           Find events that match your interests and availability
         </p>
       </div>
-      <div className="px-4 sm:px-6 lg:px-8 rounded-md">
+      <div className="px-4 sm:px-6 lg:px-8p rounded-md">
         <FilterComponent
           selectedCategory={selectedCategory}
           categories={categories}
