@@ -1,10 +1,12 @@
-import { Calendar, Mail, ShieldAlert, Award } from "lucide-react";
+import { Calendar, Mail, ShieldAlert, Award, Megaphone } from "lucide-react";
+import { RevokeAccessButton } from "./RevokeAccessButton";
 
 interface UserCardProps {
   user: {
+    _id: string;
     name: string;
     email: string;
-    role: "admin" | "user";
+    role: "admin" | "user" | "organizer";
     createdAt: string;
     eventsOrganizedCount: number;
     eventsAttendedCount: number;
@@ -39,11 +41,16 @@ export default function UserCard({ user }: UserCardProps) {
               <h3 className="font-semibold text-sm truncate pr-2">
                 {user.name}
               </h3>
-              <div className="mt-1 flex items-center">
+              <div className="mt-1 flex items-center gap-2">
                 {user.role === "admin" ? (
                   <div className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 text-[10px] px-2 py-0.5 rounded-md font-medium flex items-center w-fit">
                     <ShieldAlert className="w-3 h-3 mr-1" />
                     Admin
+                  </div>
+                ) : user.role === "organizer" ? (
+                  <div className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 text-[10px] px-2 py-0.5 rounded-md font-medium flex items-center w-fit">
+                    <Megaphone className="w-3 h-3 mr-1" />
+                    Organizer
                   </div>
                 ) : (
                   <div className="bg-muted text-muted-foreground text-[10px] px-2 py-0.5 rounded-md font-medium flex items-center capitalize w-fit">
@@ -96,6 +103,12 @@ export default function UserCard({ user }: UserCardProps) {
           <div className="flex items-center text-primary/80">
             <Award className="w-3.5 h-3.5 mr-1" />
             Active Member
+          </div>
+        )}
+
+        {user.role === "organizer" && (
+          <div className="ml-auto">
+            <RevokeAccessButton userId={user._id} />
           </div>
         )}
       </div>

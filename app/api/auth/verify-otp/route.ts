@@ -4,6 +4,7 @@ import { Otp } from "../../../../models/otp.model";
 import { UserModel } from "../../../../models/user.model";
 import bcrypt from "bcrypt";
 import { otpVerifyLimiter } from "@/lib/rateLimiter";
+import { sendEmail } from "@/lib/brevo";
 
 
 export async function POST(req: NextRequest) {
@@ -52,6 +53,39 @@ export async function POST(req: NextRequest) {
 
     if (purpose === "verify") {
       await UserModel.updateOne({ email }, { emailVerified: true });
+      
+      // Dispatch Welcome Email
+      await sendEmail({
+        to: email,
+        subject: "🎉 Welcome to Eventia!",
+        htmlContent: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+            <div style="background-color: #d97706; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">Welcome to Eventia, ${user.name || "Creator"}!</h1>
+            </div>
+            
+            <div style="padding: 32px 24px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
+              <h2 style="color: #d97706; margin-top: 0;">Your email is verified!</h2>
+              <p style="font-size: 16px;">We are super excited to have you on board. Eventia is your ultimate platform for discovering, organizing, and attending incredible events.</p>
+              
+              <div style="background-color: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 20px; margin: 24px 0;">
+                <h3 style="color: #78350f; margin-top: 0; margin-bottom: 12px;">What's Next?</h3>
+                <ul style="color: #92400e; margin: 0; padding-left: 20px;">
+                  <li style="margin-bottom: 8px;">Explore upcoming events from top creators</li>
+                  <li style="margin-bottom: 8px;">Manage your event registrations effortlessly</li>
+                  <li><strong>Apply for Organizer Access</strong> to host your own events!</li>
+                </ul>
+              </div>
+              
+              <div style="text-align: center; margin-top: 32px;">
+                <a href="${process.env.NEXT_PUBLIC_APP_URL}/events" style="background-color: #d97706; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+                  Start Exploring
+                </a>
+              </div>
+            </div>
+          </div>
+        `
+      });
     }
 
     const isValid = await bcrypt.compare(otp, existingOtp.otp);

@@ -39,8 +39,15 @@ const sidebarItems = [
   },
   {
     title: "Users",
-    href: "/admin/users",
     icon: Users,
+    subItems: [
+      { title: "Manage Users", href: "/admin/users", icon: Users },
+      {
+        title: "Organizer Requests",
+        href: "/admin/users/organizer-requests",
+        icon: ShieldCheck,
+      },
+    ],
   },
 ];
 

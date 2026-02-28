@@ -1,10 +1,12 @@
 "use server";
 
 import { connectDb } from "@/lib/db";
-import { requireAuth, requireOrganizer, requireAdmin } from "@/lib/auth-guards";
+import { requireOrganizer, requireAdmin } from "@/lib/auth-guards";
 import { EventModel } from "@/models/event.model";
 import { CategoryModel } from "@/models/category.model";
+import { UserModel } from "@/models/user.model";
 import { logActivity } from "@/lib/logActivity";
+import { sendEmail } from "@/lib/brevo";
 import mongoose from "mongoose";
 import slugify from "slugify";
 import { revalidateTag, revalidatePath } from "next/cache";
@@ -34,7 +36,7 @@ export interface EventActionData {
 
 export async function createEventAction(data: EventActionData) {
   try {
-    const session = await requireAuth();
+    const session = await requireOrganizer();
 
     if (!session?.user?.id) {
       throw new Error("Unauthorized");
@@ -169,7 +171,7 @@ export async function createEventAction(data: EventActionData) {
 
 export async function updateEventAction(eventId: string, data: Partial<EventActionData>) {
     try {
-        const session = await requireAuth();
+        const session = await requireOrganizer();
         await connectDb();
 
         const event = await EventModel.findById(eventId);
@@ -178,7 +180,9 @@ export async function updateEventAction(eventId: string, data: Partial<EventActi
           throw new Error("Event not found");
         }
     
-        requireOrganizer(event.organizer.toString(), session.user.id);
+        if (event.organizer.toString() !== session.user.id && session.user.role !== "admin") {
+          throw new Error("Forbidden: You are not the organizer of this event.");
+        }
         
         if (event.status !== "draft" && event.status !== "rejected" && event.status !== "published") {
           throw new Error("Can only edit draft, published or rejected events");
@@ -238,7 +242,7 @@ export async function updateEventAction(eventId: string, data: Partial<EventActi
 
 export async function deleteEventAction(eventId: string) {
   try {
-    const session = await requireAuth();
+    const session = await requireOrganizer();
     await connectDb();
 
     if (!mongoose.Types.ObjectId.isValid(eventId)) {
@@ -255,7 +259,9 @@ export async function deleteEventAction(eventId: string) {
         throw new Error("Only rejected or draft events can be deleted");
     }
 
-    requireOrganizer(event.organizer.toString(), session.user.id);
+    if (event.organizer.toString() !== session.user.id && session.user.role !== "admin") {
+      throw new Error("Forbidden: You are not the organizer of this event.");
+    }
 
     await EventModel.findByIdAndDelete(eventId);
 
@@ -285,7 +291,7 @@ export async function deleteEventAction(eventId: string) {
 
 export async function cancelEventAction(eventId: string) {
   try {
-    const session = await requireAuth();
+    const session = await requireOrganizer();
     await connectDb();
 
     if (!mongoose.Types.ObjectId.isValid(eventId)) {
@@ -298,7 +304,9 @@ export async function cancelEventAction(eventId: string) {
         throw new Error("Event not found");
     }
 
-    requireOrganizer(event.organizer.toString(), session.user.id);
+    if (event.organizer.toString() !== session.user.id && session.user.role !== "admin") {
+      throw new Error("Forbidden: You are not the organizer of this event.");
+    }
 
     if (event.status !== "published") {
         throw new Error("Only published events can be cancelled.");
@@ -379,6 +387,41 @@ export async function publishEventAction(eventId: string) {
     revalidatePath(`/events/${event.slug}`);
     revalidatePath("/admin/events");
     
+    // Fetch Organizer Email
+    const organizerDoc = await UserModel.findById(event.organizer).select("email name");
+    if (organizerDoc?.email) {
+      await sendEmail({
+        to: organizerDoc.email,
+        subject: "🎉 Your Event is Live!",
+        htmlContent: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+            <div style="background-color: #d97706; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">🎉 Your Event is Live!</h1>
+            </div>
+            
+            <div style="padding: 32px 24px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
+              <h2 style="color: #d97706; margin-top: 0;">Hi ${organizerDoc.name},</h2>
+              <p style="font-size: 16px;">Great news! Your event <strong>${event.title}</strong> has been approved and is now published on Eventia.</p>
+              
+              <div style="background-color: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 20px; margin: 24px 0;">
+                 <p style="margin: 0; font-size: 15px; color: #78350f;">Attendees can now start registering. You can monitor your event's performance anytime from your Organizer Dashboard.</p>
+              </div>
+              
+              <div style="text-align: center; margin-top: 32px;">
+                <a href="${process.env.NEXT_PUBLIC_APP_URL}/events/${event.slug}" style="background-color: #d97706; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+                  View Event Page
+                </a>
+              </div>
+              
+              <p style="color: #6b7280; font-size: 14px; margin-top: 32px; border-top: 1px solid #e5e7eb; padding-top: 16px; text-align: center;">
+                Happy hosting, <br/>The Eventia Team
+              </p>
+            </div>
+          </div>
+        `,
+      });
+    }
+
     return { success: true };
   } catch (error: unknown) {
     console.error("Error publishing event:", error);
@@ -433,6 +476,44 @@ export async function rejectEventAction(eventId: string, reason: string) {
     revalidateTag(`user-events-${event.organizer.toString()}`);
     revalidatePath(`/events/${event.slug}`);
     revalidatePath("/admin/events");
+
+    // Fetch Organizer Email
+    const organizerDoc = await UserModel.findById(event.organizer).select("email name");
+    if (organizerDoc?.email) {
+      await sendEmail({
+        to: organizerDoc.email,
+        subject: "Requires Action: Update on your Event Submission",
+        htmlContent: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+            <div style="background-color: #ef4444; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">Action Required: Event Submission</h1>
+            </div>
+            
+            <div style="padding: 32px 24px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
+              <h2 style="color: #ef4444; margin-top: 0;">Hi ${organizerDoc.name},</h2>
+              <p style="font-size: 16px;">Your recent event submission, <strong>${event.title}</strong>, was reviewed by the Eventia Admin Team.</p>
+              <p style="font-size: 16px;">Unfortunately, it couldn't be published and requires revisions based on the following feedback:</p>
+              
+              <div style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 20px; margin: 24px 0;">
+                <blockquote style="margin: 0; padding-left: 16px; border-left: 4px solid #ef4444; color: #991b1b; font-style: italic;">
+                  ${reason}
+                </blockquote>
+              </div>
+              
+              <div style="text-align: center; margin-top: 32px;">
+                <a href="${process.env.NEXT_PUBLIC_APP_URL}/organizer" style="background-color: #18181b; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+                  Go to Dashboard
+                </a>
+              </div>
+              
+              <p style="color: #6b7280; font-size: 14px; margin-top: 32px; border-top: 1px solid #e5e7eb; padding-top: 16px;">
+                You can edit your draft event straight from your Organizer Dashboard and resubmit it.
+              </p>
+            </div>
+          </div>
+        `,
+      });
+    }
 
     return { success: true };
   } catch (error: unknown) {

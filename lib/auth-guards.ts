@@ -20,11 +20,11 @@ export async function requireAuth() {
   return session;
 }
 
-export function requireOrganizer(
-  eventOrganizerId: string,
-  userId: string
-) {
-  if (eventOrganizerId !== userId) {
-    throw new Error("Forbidden");
+export async function requireOrganizer(){
+  const session = await getServerSession(authOptions);
+  if (!session || (session.user.role !== "organizer" && session.user.role !== "admin")){
+    throw new Error("Unauthorized");
   }
+
+  return session;
 }

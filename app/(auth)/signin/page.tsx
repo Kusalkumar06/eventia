@@ -305,7 +305,7 @@ export default function AuthPage() {
                   sessionStorage.setItem("googleLogin", "pending");
                   signIn("google", { callbackUrl: "/" });
                 }}
-                className="flex items-center justify-center gap-3 w-full border border-border rounded-lg py-2.5 px-4 text-sm font-medium text-foreground hover:bg-muted transition-all duration-300 active:scale-[0.98]"
+                className="flex items-center cursor-pointer justify-center gap-3 w-full border border-border rounded-lg py-2.5 px-4 text-sm font-medium text-foreground hover:bg-muted transition-all duration-300 active:scale-[0.98]"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

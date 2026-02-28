@@ -4,8 +4,12 @@ import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import EventImage from "@/components/shared/EventImage";
+import { useSession } from "next-auth/react";
 
 export default function OrganizerCTA() {
+  const { data: session, status } = useSession();
+  const role = (session?.user as { role?: string })?.role;
+
   return (
     <section className="relative py-32 overflow-hidden">
       <div className="absolute inset-0 z-0">
@@ -60,13 +64,25 @@ export default function OrganizerCTA() {
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
         >
-          <Link
-            href="/create-event"
-            className="inline-flex items-center gap-2 bg-white text-black px-8 py-4 rounded-full font-bold text-lg hover:bg-zinc-200 transition-colors hover:scale-105 active:scale-95 duration-200"
-          >
-            Start Creating
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+          {status === "loading" ? (
+            <div className="w-48 h-14 bg-white/20 animate-pulse rounded-full" />
+          ) : role === "admin" || role === "organizer" ? (
+            <Link
+              href="/organizer"
+              className="inline-flex items-center gap-2 bg-primary text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-primary/90 transition-all hover:scale-105 active:scale-95 duration-200 shadow-lg shadow-primary/25"
+            >
+              Go to Organizer Dashboard
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          ) : (
+            <Link
+              href="/create-event"
+              className="inline-flex items-center gap-2 bg-white text-black px-8 py-4 rounded-full font-bold text-lg hover:bg-zinc-200 transition-all hover:scale-105 active:scale-95 duration-200"
+            >
+              Become an Organizer
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          )}
         </motion.div>
       </div>
     </section>

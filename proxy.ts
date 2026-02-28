@@ -16,6 +16,10 @@ export async function proxy(req : NextRequest){
     return NextResponse.redirect(new URL("/", req.url));
   }
 
+  if (req.nextUrl.pathname.startsWith("/organizer") && token?.role !== "organizer" && token?.role !== "admin") {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
   if (token && req.nextUrl.pathname === '/signin') {
     const homeUrl = new URL('/',req.url);
     return NextResponse.redirect(homeUrl);
@@ -25,5 +29,5 @@ export async function proxy(req : NextRequest){
 }
 
 export const config = {
-  matcher: ['/create','/my-events','/profile','/admin/:path*','/create-event','/contact','/signin']
+  matcher: ['/create','/my-events','/profile','/admin/:path*','/create-event','/contact','/signin','/organizer/:path*']
 }

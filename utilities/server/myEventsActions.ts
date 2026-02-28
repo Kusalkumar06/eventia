@@ -1,5 +1,5 @@
 import { connectDb } from "@/lib/db";
-import { requireAuth } from "@/lib/auth-guards";
+import { requireAuth, requireOrganizer } from "@/lib/auth-guards";
 import { EventModel } from "@/models/event.model";
 import { RegistrationModel } from "@/models/registration.model";
 import "@/models/category.model";
@@ -112,4 +112,59 @@ export async function getMyEventsData() {
     ["my-events", userId],
     { tags: [`user-events-${userId}`] }
   )();
+}
+
+export async function getOrganizerRecentActivity(userId: string) {
+  try {
+    await requireOrganizer();
+    await connectDb();
+
+    // Find all events owned by this organizer
+    const events = await EventModel.find({ organizer: userId }).select("_id").lean();
+    const eventIds = events.map(e => e._id);
+
+    if (eventIds.length === 0) {
+      return [];
+    }
+
+    interface PopulatedActivity {
+      _id: { toString(): string };
+      action: string;
+      message: string;
+      createdAt: Date | string;
+      actor?: {
+        name: string;
+        email: string;
+      };
+    }
+
+    const { ActivityModel } = await import("@/models/activity.model");
+
+    const recentActivitiesRaw = await ActivityModel.find({
+      entityId: { $in: eventIds }
+    })
+      .populate("actor", "name email")
+      .sort({ createdAt: -1 })
+      .limit(6)
+      .lean() as unknown as PopulatedActivity[];
+
+    return recentActivitiesRaw.map((act) => ({
+      _id: act._id?.toString(),
+      action: act.action,
+      message: act.message,
+      createdAt:
+        act.createdAt instanceof Date
+          ? act.createdAt.toISOString()
+          : act.createdAt,
+      actor: act.actor
+        ? {
+            name: act.actor.name,
+            email: act.actor.email,
+          }
+        : { name: "System", email: "" },
+    }));
+  } catch (error) {
+    console.error("Failed to fetch organizer recent activity:", error);
+    return [];
+  }
 }

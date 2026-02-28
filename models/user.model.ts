@@ -7,7 +7,9 @@ export interface IUser extends Document {
   password:string|null;
   image:string|null;
   bio:string;
-  role: "user" | "admin";
+  role: "user" | "admin" | "organizer";
+  organizerStatus: "none" | "pending" | "approved" | "rejected";
+  organizerRequestReason?: string;
   provider: "credentials" | "google" ;
   emailVerified:boolean;
   createdAt:Date;
@@ -39,8 +41,16 @@ const userSchema = new Schema<IUser>(
     },
     role:{
       type: String,
-      enum: ["user", "admin"],
+      enum: ["user", "admin", "organizer"],
       default: "user",
+    },
+    organizerStatus: {
+      type: String,
+      enum: ["none", "pending", "approved", "rejected"],
+      default: "none",
+    },
+    organizerRequestReason: {
+      type: String,
     },
     provider:{
       type: String,

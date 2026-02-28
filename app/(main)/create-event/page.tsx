@@ -1,7 +1,8 @@
 import { requireAuth } from "@/lib/auth-guards";
 import { redirect } from "next/navigation";
-import { getCategories } from "@/utilities/server/categoryActions";
-import EventForm from "../../../components/createEvent/EventForm";
+import { connectDb } from "@/lib/db";
+import { UserModel } from "@/models/user.model";
+import OrganizerRequest from "@/components/createEvent/OrganizerRequest";
 
 export const dynamic = "force-dynamic";
 
@@ -12,25 +13,23 @@ export default async function CreateEventPage() {
     redirect("/signIn");
   }
 
-  // Fetch active categories using the cached server action
-  const categories = await getCategories();
+  await connectDb();
+  const dbUser = await UserModel.findById(session.user.id);
+
+  if (!dbUser) {
+    redirect("/signIn");
+  }
 
   return (
     <div className="min-h-screen bg-muted/30 pt-25 pb-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Create Event
-          </h1>
-          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
-            Fill out the details below to host a new event on Eventia.
-          </p>
-        </div>
-
-        <div className="bg-card text-card-foreground rounded-2xl border border-border shadow-sm overflow-hidden p-6 sm:p-8">
-          <EventForm categories={categories} />
-        </div>
-      </div>
+      <OrganizerRequest
+        userId={dbUser._id.toString()}
+        status={
+          dbUser.role === "organizer" || dbUser.role === "admin"
+            ? "approved"
+            : dbUser.organizerStatus || "none"
+        }
+      />
     </div>
   );
 }

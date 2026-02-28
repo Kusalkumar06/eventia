@@ -8,7 +8,7 @@ export interface UserMetricDTO {
   _id: string;
   name: string;
   email: string;
-  role: "user" | "admin";
+  role: "user" | "admin" | "organizer";
   createdAt: string;
   eventsOrganizedCount: number;
   eventsAttendedCount: number;

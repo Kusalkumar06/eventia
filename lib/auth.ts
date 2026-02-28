@@ -117,7 +117,7 @@ export const authOptions: NextAuthOptions= {
       if (token && session.user) {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
-        session.user.role = token.role as "user" | "admin";
+        session.user.role = token.role as "user" | "admin" | "organizer";
       }
       return session;
     },

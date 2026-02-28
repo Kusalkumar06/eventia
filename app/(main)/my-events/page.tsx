@@ -7,11 +7,11 @@ import { StatsCard } from "@/components/my-events/StatsCard";
 import { MyEventTab } from "@/components/my-events/MyEventTab";
 import { EventDTO } from "@/types/types";
 import {
-  Megaphone,
   CalendarCheck,
   CheckSquare,
   CalendarOff,
   LucideIcon,
+  Megaphone,
 } from "lucide-react";
 import { getMyEventsData } from "@/utilities/server/myEventsActions";
 

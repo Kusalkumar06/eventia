@@ -36,7 +36,7 @@ export async function registerForEventAction(eventId: string) {
     }
 
     try {
-      const registration = await RegistrationModel.create({
+      await RegistrationModel.create({
         event: eventId,
         user: session.user.id,
       });
@@ -45,8 +45,8 @@ export async function registerForEventAction(eventId: string) {
         actorId: session.user.id,
         actorRole: session.user.role as "user" | "admin",
         action: "EVENT_REGISTERED",
-        entityType: "registration",
-        entityId: registration._id,
+        entityType: "event",
+        entityId: updatedEvent._id,
         message: `Registered for event: ${updatedEvent.title}`,
       });
 
@@ -187,8 +187,8 @@ export async function unregisterFromEventAction(eventId: string) {
           actorId: session.user.id,
           actorRole: session.user.role as "user" | "admin",
           action: "EVENT_UNREGISTERED",
-          entityType: "registration",
-          entityId: deleted._id,
+          entityType: "event",
+          entityId: event._id,
           message: `Unregistered from event: ${event.title}`,
         });
     
