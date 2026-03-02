@@ -1,4 +1,4 @@
-import { requireAuth } from "@/lib/auth-guards";
+import { requireOrganizer } from "@/lib/auth-guards";
 import {
   getMyEventsData,
   getOrganizerRecentActivity,
@@ -56,7 +56,7 @@ const getActionConfig = (action: string) => {
 };
 
 export default async function OrganizerDashboardPage() {
-  const session = await requireAuth();
+  const session = await requireOrganizer();
 
   const [{ organizing }, recentActivities] = await Promise.all([
     getMyEventsData(),

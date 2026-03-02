@@ -1,5 +1,5 @@
 import { connectDb } from "@/lib/db";
-import { requireAuth, requireOrganizer } from "@/lib/auth-guards";
+import { requireOrganizer,requireAuth } from "@/lib/auth-guards";
 import { EventModel } from "@/models/event.model";
 import { RegistrationModel } from "@/models/registration.model";
 import "@/models/category.model";

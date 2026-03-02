@@ -4,14 +4,13 @@ import React from "react";
 import EventCard from "@/components/EventCard";
 import { SectionHeader } from "@/components/my-events/SectionHeader";
 import { StatsCard } from "@/components/my-events/StatsCard";
-import { MyEventTab } from "@/components/my-events/MyEventTab";
+// MyEventTab is no longer utilized since organizing content is removed.
 import { EventDTO } from "@/types/types";
 import {
   CalendarCheck,
-  CheckSquare,
   CalendarOff,
   LucideIcon,
-  Megaphone,
+  CheckSquare,
 } from "lucide-react";
 import { getMyEventsData } from "@/utilities/server/myEventsActions";
 
@@ -31,9 +30,8 @@ const EmptyState = ({
 );
 
 const MyEventsPage = async () => {
-  const { organizing, attending, attended } = await getMyEventsData();
+  const { attending, attended } = await getMyEventsData();
 
-  const organizingCount = organizing.length;
   const attendingCount = attending.length;
   const attendedCount = attended.length;
 
@@ -46,47 +44,31 @@ const MyEventsPage = async () => {
             My Events
           </h1>
           <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-            Manage events you organize and participate in.
+            Events you are participating in.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
-            <StatsCard
-              label="Organizing"
-              count={organizingCount}
-              icon={Megaphone}
-              colorClass="bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400"
-            />
-            <StatsCard
-              label="Attending"
-              count={attendingCount}
-              icon={CalendarCheck}
-              colorClass="bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
-            />
-            <StatsCard
-              label="Attended"
-              count={attendedCount}
-              icon={CheckSquare}
-              colorClass="bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
-            />
+          <div className="flex gap-4 mt-8 flex-wrap">
+            <div className="flex-1 min-w-[200px]">
+              <StatsCard
+                label="Attending"
+                count={attendingCount}
+                icon={CalendarCheck}
+                colorClass="bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+              />
+            </div>
+            <div className="flex-1 min-w-[200px]">
+              <StatsCard
+                label="Attended"
+                count={attendedCount}
+                icon={CheckSquare}
+                colorClass="bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
+              />
+            </div>
           </div>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
-        {/* Section 1: Organizing */}
-        <section>
-          <SectionHeader title="Organizing" count={organizingCount} />
-
-          {organizingCount === 0 ? (
-            <EmptyState
-              message="You are not organizing any events yet."
-              icon={CalendarOff}
-            />
-          ) : (
-            <MyEventTab events={organizing} />
-          )}
-        </section>
-
         {/* Section 2: Attending */}
         <section>
           <SectionHeader title="Attending (Upcoming)" count={attendingCount} />
@@ -122,6 +104,8 @@ const MyEventsPage = async () => {
             </div>
           )}
         </section>
+
+
       </main>
     </div>
   );
