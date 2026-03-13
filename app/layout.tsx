@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   },
   description:
     "The next generation event management platform for immersive experiences.",
+  verification:{
+    google: 'TiPjWg0s02uRKePlyZnAJ4M0WOu8NFrWZMd2aNAGm80',
+  },
   openGraph: {
     title: "Eventia",
     description:
