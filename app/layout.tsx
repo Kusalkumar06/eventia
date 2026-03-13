@@ -19,6 +19,23 @@ export const metadata: Metadata = {
   },
   description:
     "The next generation event management platform for immersive experiences.",
+  keywords: [
+    "Eventia",
+    "event management platform",
+    "live events",
+    "ticket booking",
+    "immersive experiences",
+    "music events",
+    "comedy shows",
+    "art exhibitions",
+    "business conferences",
+    "sports events",
+    "gaming tournaments",
+    "travel events",
+    "food festivals",
+    "event organizer tools",
+    "next generation event platform",
+  ],
   verification:{
     google: 'TiPjWg0s02uRKePlyZnAJ4M0WOu8NFrWZMd2aNAGm80',
   },
@@ -26,7 +43,7 @@ export const metadata: Metadata = {
     title: "Eventia",
     description:
       "The next generation event management platform for immersive experiences.",
-    url: "/",
+    url: "/", 
     siteName: "Eventia",
     locale: "en_US",
     type: "website",
