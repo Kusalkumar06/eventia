@@ -1,40 +1,46 @@
-import { MetadataRoute } from 'next';
+import { MetadataRoute } from "next";
 import { connectDb } from "@/lib/db";
 import { EventModel } from "@/models/event.model";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+export const revalidate = 86400;
 
-  // Important static pages
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    "https://eventia-nine.vercel.app";
+
   const staticPages = [
-    '',
-    '/events',
-    '/contact',
-    '/signin',
-    '/signup'
+    "",
+    "/events",
+    "/contact",
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: route === '' ? 1 : 0.8,
+    changeFrequency: "daily" as const,
+    priority: route === "" ? 1 : 0.8,
   }));
 
   try {
-    // Dynamic Event Pages
     await connectDb();
-    const events = await EventModel.find({ status: 'published' }).select('slug updatedAt');
+
+    const events = await EventModel
+      .find({ status: "published" })
+      .select("slug updatedAt");
 
     const eventPages = events.map((event) => ({
       url: `${baseUrl}/events/${event.slug}`,
       lastModified: event.updatedAt || new Date(),
-      changeFrequency: 'weekly' as const,
+      changeFrequency: "weekly" as const,
       priority: 0.6,
     }));
 
     return [...staticPages, ...eventPages];
+
   } catch (error) {
-    console.error("Error generating sitemap for events:", error);
-    // Return static pages as fallback
+
+    console.error("Error generating sitemap:", error);
     return staticPages;
+
   }
 }
